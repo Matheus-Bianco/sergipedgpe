@@ -23,7 +23,11 @@ Created on Thu Sep 25 08:34:30 2025
   .wrap{display:grid;grid-template-columns:320px 1fr;gap:16px;padding:16px}
   .sidebar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
   .content{display:grid;grid-template-rows:auto 1fr auto;gap:16px}
-  .kpis{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:12px}
+  .kpis{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px
+  }
   .kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
   .kpi .v{font-size:22px;font-weight:700}
   .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px}
@@ -89,6 +93,7 @@ Created on Thu Sep 25 08:34:30 2025
       <div><label>Área Urbana</label><select id="f_urb" multiple size="6"></select></div>
     </div>
     <div class="group"><label><input id="f_3ano" type="checkbox"> Somente escolas com 3º ano</label></div>
+    <div class="group"><label><input id="f_sem_saeb" type="checkbox">Somente escolas sem SAEB 23 (PT e MAT vazios)</label></div>
     <div class="group row-actions">
       <button class="btn" id="applyBtn">🔎 Aplicar filtros</button>
       <button class="btn" id="clearBtn">Limpar</button>
@@ -135,6 +140,7 @@ Created on Thu Sep 25 08:34:30 2025
       <div class="kpi"><div class="label">% com 3º ano</div><div id="k_3ano" class="v">–</div></div>
       <div class="kpi"><div class="label">Média Part. SAEB23</div><div id="k_part" class="v">–</div></div>
       <div class="kpi"><div class="label">Escolas com Prioridade Alta</div><div id="k_alta" class="v">–</div></div>
+      <div class="kpi"><div class="label">Escolas sem SAEB 23</div><div id="k_sem_saeb" class="v">–</div></div>
     </div>
 
     <div class="panel">
@@ -334,6 +340,7 @@ function apply(){
   const sel_cat  = getSelectedValues(document.getElementById('f_cat'));
   const sel_urb  = getSelectedValues(document.getElementById('f_urb'));
   const only3    = document.getElementById('f_3ano').checked;
+  const onlyNoSaeb = document.getElementById('f_sem_saeb').checked;
 
   let rows = window._rowsRaw.slice();
   if (sel_dre.length)  rows = rows.filter(r=> sel_dre.includes(String(r.dre)));
@@ -341,6 +348,8 @@ function apply(){
   if (sel_cat.length)  rows = rows.filter(r=> sel_cat.includes(String(r.categoria)));
   if (sel_urb.length)  rows = rows.filter(r=> sel_urb.includes(String(r.area_urbana)));
   if (only3)           rows = rows.filter(r=> r.possui_3o_ano===true);
+  if (onlyNoSaeb) {rows = rows.filter(r =>(r.saeb23_pt == null || isNaN(r.saeb23_pt)) && (r.saeb23_mat == null || isNaN(r.saeb23_mat)));}
+
 
   const W = weightsNow();                 // <<< pega pesos uma vez
   const scored = computeScores(rows, W);  // <<< passa os pesos p/ cálculo
@@ -367,6 +376,14 @@ function renderKPIs(rows){
   const alta = rows.filter(r => r._score!=null && r._score >= SCORE_BANDS.q66).length;
   const boxAlta = document.getElementById('k_alta');
   if (boxAlta) boxAlta.textContent = alta;
+  
+  const semSaeb = rows.filter(r => 
+   (r.saeb23_pt == null || isNaN(r.saeb23_pt)) &&
+   (r.saeb23_mat == null || isNaN(r.saeb23_mat))
+  ).length;
+  const kSemSaeb = document.getElementById('k_sem_saeb');
+  if (kSemSaeb) kSemSaeb.textContent = semSaeb;
+    
 }
 function renderLegend(rows){
   const legend = document.getElementById('legend');
