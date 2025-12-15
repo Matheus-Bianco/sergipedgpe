@@ -1257,10 +1257,27 @@ function median(arr) {
 function toNumber(x) {
     if (x === null || x === undefined) return null;
     if (typeof x === 'number') return isFinite(x) ? x : null;
+    
     let s = String(x).trim();
     if (!s) return null;
-    const isPct = s.endsWith('%');
-    s = s.replace('%', '').replace(/\./g, '').replace(',', '.');
+    
+    // Remove espaços e aspas
+    s = s.replace(/["'\s]/g, '');
+    
+    // Detecta e remove %
+    const isPct = s.includes('%');
+    s = s.replace('%', '');
+    
+    // Se tem tanto ponto quanto vírgula, assume formato brasileiro (1.234,56)
+    if (s.includes('.') && s.includes(',')) {
+        s = s.replace(/\./g, '').replace(',', '.');
+    }
+    // Se só tem vírgula, assume decimal brasileiro
+    else if (s.includes(',')) {
+        s = s.replace(',', '.');
+    }
+    // Se só tem ponto, mantém (já é formato americano)
+    
     const v = Number(s);
     return isNaN(v) ? null : v;
 }
@@ -1697,11 +1714,17 @@ async function tryFetch(url, type) {
             const txt = await res.text();
             const guessSep = (txt.indexOf(';') > txt.indexOf(',')) ? ';' : ',';
             const lines = txt.split(/\r?\n/).filter(l => l.trim().length);
-            const head = splitCSVLine(lines[0], guessSep).map(h => h.replace(/^"+|"+$/g, '').trim());
+            
+            // Processa cabeçalho
+            const head = splitCSVLine(lines[0], guessSep);
+            
+            // Processa linhas de dados
             const rows = lines.slice(1).map(line => {
                 const cells = splitCSVLine(line, guessSep);
                 const obj = {};
-                head.forEach((h, i) => obj[h] = (cells[i] ?? '').replace(/^"+|"+$/g, '').trim());
+                head.forEach((h, i) => {
+                    obj[h] = cells[i] ?? '';
+                });
                 return obj;
             });
             return rows;
@@ -1713,19 +1736,44 @@ async function tryFetch(url, type) {
 }
 
 function splitCSVLine(line, sep) {
-    const out = []; let cur = ''; let q = false;
+    const out = [];
+    let cur = '';
+    let inQuotes = false;
+    
     for (let i = 0; i < line.length; i++) {
         const ch = line[i];
-        if (ch === '"') { q = !q; cur += ch; }
-        else if (ch === sep && !q) { out.push(cur); cur = ''; }
-        else { cur += ch; }
+        const next = line[i + 1];
+        
+        if (ch === '"') {
+            // Aspas duplas escapadas ("")
+            if (inQuotes && next === '"') {
+                cur += '"';
+                i++; // pula a próxima aspa
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (ch === sep && !inQuotes) {
+            out.push(cur);
+            cur = '';
+        } else {
+            cur += ch;
+        }
     }
     out.push(cur);
-    return out;
+    
+    // Remove aspas iniciais e finais de cada campo
+    return out.map(field => field.replace(/^["']|["']$/g, '').trim());
 }
 
 function ingest(rawRows) {
+    console.log('📊 Carregando dados...', rawRows.length, 'linhas brutas');
+    
     const rows = rawRows.map(renameCols).map(coerceTypes);
+    
+    console.log('✓ Dados processados:', rows.length, 'escolas');
+    console.log('📋 Colunas encontradas:', Object.keys(rows[0] || {}));
+    console.log('🔍 Amostra de dados:', rows.slice(0, 2));
+    
     window._rowsRaw = rows;
     renderFilterChips();
     $('#dataStatus').textContent = `✓ ${rows.length} escolas carregadas com sucesso`;
@@ -1804,5 +1852,3 @@ function updateHelpWeights(W) {
     </script>
 </body>
 </html>
-
-
