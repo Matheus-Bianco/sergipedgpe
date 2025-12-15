@@ -149,30 +149,59 @@
         }
 
         .filter-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
 
         .filter-label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--cinza-texto);
-            margin-bottom: 0.4rem;
+            color: var(--azul-escuro);
+            margin-bottom: 0.5rem;
         }
 
-        select, input[type="checkbox"] {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border);
+        /* Filtros em formato de caixinhas */
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .filter-chip {
+            position: relative;
+        }
+
+        .filter-chip input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .filter-chip label {
+            display: inline-block;
+            padding: 0.45rem 0.75rem;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
             border-radius: 6px;
-            font-size: 0.85rem;
-            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--cinza-texto);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
         }
 
-        select:focus {
-            outline: none;
-            border-color: var(--azul-medio);
-            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+        .filter-chip label:hover {
+            background: var(--azul-pastel);
+            border-color: var(--azul-claro);
+        }
+
+        .filter-chip input[type="checkbox"]:checked + label {
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+            color: var(--branco);
+            border-color: var(--azul-escuro);
+            font-weight: 600;
         }
 
         .checkbox-group {
@@ -197,7 +226,7 @@
         }
 
         .checkbox-group label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             user-select: none;
         }
@@ -215,13 +244,13 @@
         }
 
         .weight-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--cinza-texto);
         }
 
         .weight-value {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--azul-escuro);
             background: var(--azul-pastel);
@@ -298,21 +327,18 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .btn-secondary:hover {
             background: var(--azul-pastel);
         }
 
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
         .info-note {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #64748b;
             background: #f8fafc;
             padding: 0.6rem;
@@ -416,17 +442,38 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--azul-pastel);
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
         }
 
         .card-title {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--azul-escuro);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin: 0;
         }
 
         .card-actions {
@@ -436,26 +483,36 @@
         }
 
         .card-actions select {
-            width: auto;
             padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
         }
 
         .btn-small {
             background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
             color: var(--branco);
-            padding: 0.4rem 0.9rem;
+            padding: 0.45rem 0.9rem;
             border: none;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .btn-small:hover {
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(11, 95, 165, 0.3);
+        }
+
+        .btn-small svg {
+            width: 14px;
+            height: 14px;
         }
 
         /* Scatter plot */
@@ -483,7 +540,7 @@
         }
 
         .axis-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--cinza-texto);
         }
@@ -505,13 +562,14 @@
             transition: opacity 0.15s;
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
         }
 
         .legend {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--cinza-texto);
             margin-top: 1rem;
             padding-top: 1rem;
@@ -541,7 +599,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         thead {
@@ -552,16 +610,18 @@
         }
 
         th {
-            padding: 0.9rem 0.8rem;
+            padding: 0.75rem 0.6rem;
             text-align: left;
             font-weight: 600;
             color: var(--branco);
             white-space: nowrap;
+            font-size: 0.75rem;
         }
 
         td {
-            padding: 0.8rem;
+            padding: 0.7rem 0.6rem;
             border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
         }
 
         tbody tr:hover {
@@ -574,9 +634,9 @@
 
         .priority-badge {
             display: inline-block;
-            padding: 0.3rem 0.7rem;
+            padding: 0.25rem 0.6rem;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
 
@@ -762,10 +822,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .btn-group {
-                grid-template-columns: 1fr;
-            }
-
             .card-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -840,23 +896,23 @@
                 </h3>
 
                 <div class="filter-group">
-                    <label class="filter-label">Diretoria Regional de Educação</label>
-                    <select id="f_dre" multiple size="6"></select>
+                    <label class="filter-label">Diretoria Regional (DRE)</label>
+                    <div class="filter-chips" id="filter_dre"></div>
                 </div>
 
                 <div class="filter-group">
                     <label class="filter-label">Tipo de Ensino</label>
-                    <select id="f_tipo" multiple size="4"></select>
+                    <div class="filter-chips" id="filter_tipo"></div>
                 </div>
 
                 <div class="filter-group">
                     <label class="filter-label">Categoria</label>
-                    <select id="f_cat" multiple size="4"></select>
+                    <div class="filter-chips" id="filter_cat"></div>
                 </div>
 
                 <div class="filter-group">
-                    <label class="filter-label">Área Urbana</label>
-                    <select id="f_urb" multiple size="3"></select>
+                    <label class="filter-label">Área</label>
+                    <div class="filter-chips" id="filter_urb"></div>
                 </div>
 
                 <div class="filter-group">
@@ -877,7 +933,7 @@
                     ⚡ Os filtros são aplicados automaticamente ao selecionar/desselecionar
                 </div>
 
-                <button class="btn-secondary" id="clearBtn" style="width: 100%; margin-top: 0.5rem;">
+                <button class="btn-secondary" id="clearBtn" style="margin-top: 0.75rem;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                     </svg>
@@ -890,7 +946,7 @@
                 <h3 class="sidebar-title">
                     <svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4zM13 14H9v-2h4v2zm2-4H9V8h6v2z"/>
-                        </svg>
+                    </svg>
                     Pesos dos Critérios
                 </h3>
 
@@ -960,12 +1016,14 @@
             <!-- Gráfico de Dispersão -->
             <div class="content-card">
                 <div class="card-header">
-                    <h2 class="card-title">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                        </svg>
-                        Mapa de Prioridade
-                    </h2>
+                    <div class="card-title-wrapper">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                            </svg>
+                        </div>
+                        <h2 class="card-title">Mapa de Prioridade</h2>
+                    </div>
                     <div id="legend" class="legend"></div>
                 </div>
 
@@ -1004,14 +1062,16 @@
             <!-- Tabela de Ranking -->
             <div class="content-card">
                 <div class="card-header">
-                    <h2 class="card-title">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-                        </svg>
-                        Ranking de Escolas
-                    </h2>
+                    <div class="card-title-wrapper">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                            </svg>
+                        </div>
+                        <h2 class="card-title">Ranking de Escolas</h2>
+                    </div>
                     <div class="card-actions">
-                        <label class="filter-label">Mostrar Top</label>
+                        <label class="filter-label" style="margin: 0;">Mostrar Top</label>
                         <select id="topN">
                             <option value="0">Todas</option>
                             <option value="25">25</option>
@@ -1019,7 +1079,7 @@
                             <option value="100">100</option>
                         </select>
                         <button class="btn-small" id="exportBtn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/>
                             </svg>
                             Exportar CSV
@@ -1037,13 +1097,16 @@
                                 <th>Tipo</th>
                                 <th>Alunos</th>
                                 <th>Part. SAEB23</th>
-                                <th>Part. Plurall</th>
                                 <th>SAEB23 PT</th>
                                 <th>SAEB23 MAT</th>
                                 <th>SAESE24 PT</th>
                                 <th>SAESE24 MAT</th>
-                                <th>Rend. PT</th>
-                                <th>Rend. MAT</th>
+                                <th>Part. Diag.</th>
+                                <th>Rend. PT Diag.</th>
+                                <th>Rend. MAT Diag.</th>
+                                <th>Part. Form.</th>
+                                <th>Rend. PT Form.</th>
+                                <th>Rend. MAT Form.</th>
                                 <th>Prioridade</th>
                                 <th>Score</th>
                             </tr>
@@ -1100,8 +1163,8 @@
 
                 <h4>📋 Indicadores Utilizados</h4>
                 <ul>
-                    <li><strong>Participação:</strong> Taxa de participação SAEB 2023, Taxa de participação Plurall</li>
-                    <li><strong>Desempenho:</strong> SAEB 2023 (PT e MAT), SAESE 2024 (PT e MAT), Rendimento Plurall (PT e MAT)</li>
+                    <li><strong>Participação:</strong> Taxa de participação SAEB 2023, Participação Diagnóstica Plurall, Participação Formativa Plurall</li>
+                    <li><strong>Desempenho:</strong> SAEB 2023 (PT e MAT), SAESE 2024 (PT e MAT), Rendimentos Diagnóstica Plurall (PT e MAT), Rendimentos Formativa Plurall (PT e MAT)</li>
                     <li><strong>Tamanho:</strong> Número total de alunos matriculados</li>
                 </ul>
 
@@ -1117,7 +1180,7 @@
 
                 <h4>💡 Dicas de Uso</h4>
                 <ul>
-                    <li>Use os <strong>filtros</strong> para focar em grupos específicos de escolas</li>
+                    <li>Use os <strong>filtros</strong> (clicando nas caixinhas) para focar em grupos específicos</li>
                     <li>Ajuste os <strong>pesos</strong> para simular diferentes cenários de priorização</li>
                     <li>No gráfico, escolas no <strong>canto superior direito</strong> (alta prioridade em ambos os eixos) merecem atenção especial</li>
                     <li>Exporte os dados para análises mais aprofundadas em planilhas</li>
@@ -1126,9 +1189,9 @@
 
                 <h4>🔄 Fluxo de Trabalho Recomendado</h4>
                 <ol>
-                    <li>Selecione os filtros desejados (DRE, tipo de ensino, etc.)</li>
+                    <li>Selecione os filtros desejados clicando nas caixinhas (aplicação automática)</li>
                     <li>Ajuste os pesos conforme sua estratégia de intervenção</li>
-                    <li>Clique em "Aplicar" ou "Recalcular Score"</li>
+                    <li>Clique em "Recalcular Score" para ver o impacto das mudanças de peso</li>
                     <li>Analise o gráfico de dispersão para identificar padrões</li>
                     <li>Consulte a tabela de ranking para ver detalhes das escolas prioritárias</li>
                     <li>Exporte os resultados para compartilhar com a equipe</li>
@@ -1137,7 +1200,6 @@
         </div>
     </div>
 
-    <!-- Input oculto para upload manual -->
     <input id="fileInput" type="file" accept=".json,.csv" class="hidden">
 
     <script>
@@ -1149,17 +1211,26 @@ const DATA_SOURCES = [
 ];
 
 const COL_MAP = {
-    'ID Escola':'id_escola','ID Inep':'id_inep','Escola':'escola','DRE':'dre',
-    'Tipo de Ensino':'tipo_ensino','Possui 3o Ano':'possui_3o_ano','Possui 3º Ano':'possui_3o_ano',
-    'Área Urbana':'area_urbana','Categoria':'categoria',
+    'ID Escola':'id_escola',
+    'ID Inep':'id_inep',
+    'Escola':'escola',
+    'DRE':'dre',
+    'Tipo de Ensino':'tipo_ensino',
+    'Possui 3o Ano':'possui_3o_ano',
+    'Possui 3º Ano':'possui_3o_ano',
+    'Área Urbana':'area_urbana',
+    'Categoria':'categoria',
     'SAEB 23 Taxa Participação':'saeb23_participacao',
     'SAEB 23 Nota Média PT':'saeb23_pt',
     'SAEB 23 Nota Média Mat':'saeb23_mat',
     'SAESE 24 Proficiência PT':'saese24_pt',
     'SAESE 24 Proficiência MAT':'saese24_mat',
-    'Participação Avaliação Plurall':'plurall_participacao',
-    'Rendimento Médio Língua Portuguesa Plurall':'plurall_rend_pt',
-    'Rendimento Médio Matemática Plurall':'plurall_rend_mat',
+    'Participação Avaliação Diagnóstica':'plurall_diag_participacao',
+    'Rendimento Médio Língua Portuguesa Avaliação Diagnóstica':'plurall_diag_rend_pt',
+    'Rendimento Médio Matemática Avaliação Diagnóstica':'plurall_diag_rend_mat',
+    'Participação Avaliação Formativa':'plurall_form_participacao',
+    'Rendimento LP Avaliação Formativa':'plurall_form_rend_pt',
+    'Rendimento MAT Avaliação Formativa':'plurall_form_rend_mat',
     'Número de Alunos':'num_alunos'
 };
 
@@ -1168,15 +1239,6 @@ const palette = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b",
 
 /* ================== UTILITÁRIOS ================== */
 const $ = (sel) => document.querySelector(sel);
-
-function fillSelect(id, values) {
-    const el = document.getElementById(id);
-    el.innerHTML = values.map(v => `<option value="${String(v)}">${String(v)}</option>`).join('');
-}
-
-function getSelectedValues(sel) {
-    return Array.from(sel.selectedOptions).map(o => o.value);
-}
 
 function normalizeArr(values) {
     const arr = values.filter(v => v !== null && !isNaN(v));
@@ -1222,7 +1284,9 @@ function renameCols(row) {
 function coerceTypes(r) {
     const o = { ...r };
     ['saeb23_participacao', 'saeb23_pt', 'saeb23_mat', 'saese24_pt', 'saese24_mat',
-     'plurall_participacao', 'plurall_rend_pt', 'plurall_rend_mat', 'num_alunos']
+     'plurall_diag_participacao', 'plurall_diag_rend_pt', 'plurall_diag_rend_mat',
+     'plurall_form_participacao', 'plurall_form_rend_pt', 'plurall_form_rend_mat',
+     'num_alunos']
         .forEach(k => o[k] = toNumber(o[k]));
     o['possui_3o_ano'] = truthy3Ano(o['possui_3o_ano']);
     return o;
@@ -1253,8 +1317,10 @@ function classifyScore(v) {
 /* ================== CÁLCULO DO SCORE ================== */
 function computeScores(rows, weights) {
     const get = (r, k) => (r[k] === null ? null : Number(r[k]));
-    const part_cols = ['saeb23_participacao', 'plurall_participacao'];
-    const perf_cols = ['saeb23_pt', 'saeb23_mat', 'saese24_pt', 'saese24_mat', 'plurall_rend_pt', 'plurall_rend_mat'];
+    const part_cols = ['saeb23_participacao', 'plurall_diag_participacao', 'plurall_form_participacao'];
+    const perf_cols = ['saeb23_pt', 'saeb23_mat', 'saese24_pt', 'saese24_mat', 
+                       'plurall_diag_rend_pt', 'plurall_diag_rend_mat',
+                       'plurall_form_rend_pt', 'plurall_form_rend_mat'];
     const size_cols = ['num_alunos'];
     const normers = {};
     
@@ -1297,30 +1363,70 @@ function weightsNow() {
     return W;
 }
 
-/* ================== RENDER ================== */
-function apply() {
-    if (!Array.isArray(window._rowsRaw) || !window._rowsRaw.length) return;
+/* ================== FILTROS EM CAIXINHAS ================== */
+function renderFilterChips() {
+    if (!window._rowsRaw) return;
+    
+    const uniq = (arr, k) => Array.from(new Set(arr.map(r => r[k]))).filter(Boolean).sort();
+    
+    const filters = [
+        { id: 'filter_dre', key: 'dre' },
+        { id: 'filter_tipo', key: 'tipo_ensino' },
+        { id: 'filter_cat', key: 'categoria' },
+        { id: 'filter_urb', key: 'area_urbana' }
+    ];
+    
+    filters.forEach(({ id, key }) => {
+        const container = document.getElementById(id);
+        const values = uniq(window._rowsRaw, key);
+        
+        container.innerHTML = values.map(v => `
+            <div class="filter-chip">
+                <input type="checkbox" id="${id}_${v}" value="${v}" data-filter="${key}">
+                <label for="${id}_${v}">${v}</label>
+            </div>
+        `).join('');
+        
+        // Adicionar listeners
+        container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', apply);
+        });
+    });
+}
 
-    const sel_dre = getSelectedValues($('#f_dre'));
-    const sel_tipo = getSelectedValues($('#f_tipo'));
-    const sel_cat = getSelectedValues($('#f_cat'));
-    const sel_urb = getSelectedValues($('#f_urb'));
-    const only3 = $('#f_3ano').checked;
-    const onlyNoSaeb = $('#f_sem_saeb').checked;
-
+function getFilteredRows() {
+    if (!window._rowsRaw) return [];
+    
     let rows = window._rowsRaw.slice();
-    if (sel_dre.length) rows = rows.filter(r => sel_dre.includes(String(r.dre)));
-    if (sel_tipo.length) rows = rows.filter(r => sel_tipo.includes(String(r.tipo_ensino)));
-    if (sel_cat.length) rows = rows.filter(r => sel_cat.includes(String(r.categoria)));
-    if (sel_urb.length) rows = rows.filter(r => sel_urb.includes(String(r.area_urbana)));
-    if (only3) rows = rows.filter(r => r.possui_3o_ano === true);
-    if (onlyNoSaeb) {
+    
+    // Filtros de caixinhas
+    ['dre', 'tipo_ensino', 'categoria', 'area_urbana'].forEach(key => {
+        const checked = Array.from(document.querySelectorAll(`input[data-filter="${key}"]:checked`))
+            .map(cb => cb.value);
+        if (checked.length) {
+            rows = rows.filter(r => checked.includes(String(r[key])));
+        }
+    });
+    
+    // Checkboxes especiais
+    if ($('#f_3ano').checked) {
+        rows = rows.filter(r => r.possui_3o_ano === true);
+    }
+    
+    if ($('#f_sem_saeb').checked) {
         rows = rows.filter(r =>
             (r.saeb23_pt == null || isNaN(r.saeb23_pt)) &&
             (r.saeb23_mat == null || isNaN(r.saeb23_mat))
         );
     }
+    
+    return rows;
+}
 
+/* ================== RENDER ================== */
+function apply() {
+    const rows = getFilteredRows();
+    
     const W = weightsNow();
     const scored = computeScores(rows, W);
     calcBands(scored);
@@ -1537,13 +1643,16 @@ function renderTable(rows) {
         tr.appendChild(td(r.tipo_ensino));
         tr.appendChild(td(r.num_alunos));
         tr.appendChild(td(r.saeb23_participacao));
-        tr.appendChild(td(r.plurall_participacao));
         tr.appendChild(td(r.saeb23_pt));
         tr.appendChild(td(r.saeb23_mat));
         tr.appendChild(td(r.saese24_pt));
         tr.appendChild(td(r.saese24_mat));
-        tr.appendChild(td(r.plurall_rend_pt));
-        tr.appendChild(td(r.plurall_rend_mat));
+        tr.appendChild(td(r.plurall_diag_participacao));
+        tr.appendChild(td(r.plurall_diag_rend_pt));
+        tr.appendChild(td(r.plurall_diag_rend_mat));
+        tr.appendChild(td(r.plurall_form_participacao));
+        tr.appendChild(td(r.plurall_form_rend_pt));
+        tr.appendChild(td(r.plurall_form_rend_mat));
         
         const cl = classifyScore(r._score);
         const badge = document.createElement('td');
@@ -1553,14 +1662,6 @@ function renderTable(rows) {
         tr.appendChild(td(r._score == null ? '' : r._score.toFixed(3)));
         tbody.appendChild(tr);
     });
-}
-
-function renderSelects(rows) {
-    const uniq = (arr, k) => Array.from(new Set(arr.map(r => r[k]))).filter(Boolean).sort();
-    fillSelect('f_dre', uniq(rows, 'dre'));
-    fillSelect('f_tipo', uniq(rows, 'tipo_ensino'));
-    fillSelect('f_cat', uniq(rows, 'categoria'));
-    fillSelect('f_urb', uniq(rows, 'area_urbana'));
 }
 
 function exportCSV() {
@@ -1626,29 +1727,26 @@ function splitCSVLine(line, sep) {
 function ingest(rawRows) {
     const rows = rawRows.map(renameCols).map(coerceTypes);
     window._rowsRaw = rows;
-    renderSelects(rows);
+    renderFilterChips();
     $('#dataStatus').textContent = `✓ ${rows.length} escolas carregadas com sucesso`;
     apply();
 }
 
 /* ================== EVENTOS ================== */
-// Filtros reativos - aplicam automaticamente ao mudar
-['f_dre', 'f_tipo', 'f_cat', 'f_urb'].forEach(id => {
-    document.getElementById(id).addEventListener('change', apply);
-});
-
+// Checkboxes especiais
 $('#f_3ano').addEventListener('change', apply);
 $('#f_sem_saeb').addEventListener('change', apply);
 
 $('#clearBtn').addEventListener('click', () => {
-    ['f_dre', 'f_tipo', 'f_cat', 'f_urb'].forEach(id => {
-        const el = document.getElementById(id);
-        Array.from(el.options).forEach(o => o.selected = false);
+    // Limpar filtros de caixinhas
+    document.querySelectorAll('.filter-chip input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
     });
     $('#f_3ano').checked = false;
     $('#f_sem_saeb').checked = false;
     apply();
 });
+
 $('#recalcBtn').addEventListener('click', apply);
 $('#updatePlotBtn').addEventListener('click', apply);
 $('#topN').addEventListener('change', apply);
