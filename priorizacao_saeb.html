@@ -1412,7 +1412,12 @@ function renderFilterChips() {
 }
 
 function getFilteredRows() {
-    if (!window._rowsRaw) return [];
+    if (!window._rowsRaw) {
+        console.warn('⚠️ window._rowsRaw está vazio!');
+        return [];
+    }
+    
+    console.log('📦 Total de escolas brutas:', window._rowsRaw.length);
     
     let rows = window._rowsRaw.slice();
     
@@ -1421,31 +1426,54 @@ function getFilteredRows() {
         const checked = Array.from(document.querySelectorAll(`input[data-filter="${key}"]:checked`))
             .map(cb => cb.value);
         if (checked.length) {
+            const before = rows.length;
             rows = rows.filter(r => checked.includes(String(r[key])));
+            console.log(`🔍 Filtro ${key}: ${before} → ${rows.length}`);
         }
     });
     
     // Checkboxes especiais
     if ($('#f_3ano').checked) {
+        const before = rows.length;
         rows = rows.filter(r => r.possui_3o_ano === true);
+        console.log(`🔍 Filtro 3º ano: ${before} → ${rows.length}`);
     }
     
     if ($('#f_sem_saeb').checked) {
+        const before = rows.length;
         rows = rows.filter(r =>
             (r.saeb23_pt == null || isNaN(r.saeb23_pt)) &&
             (r.saeb23_mat == null || isNaN(r.saeb23_mat))
         );
+        console.log(`🔍 Filtro sem SAEB: ${before} → ${rows.length}`);
     }
+    
+    console.log('✅ Filtros aplicados. Resultado:', rows.length, 'escolas');
     
     return rows;
 }
 
 /* ================== RENDER ================== */
 function apply() {
+    console.log('🔄 Aplicando filtros...');
+    
     const rows = getFilteredRows();
+    console.log('📊 Escolas após filtros:', rows.length);
+    
+    if (rows.length > 0) {
+        console.log('🔍 Primeira escola filtrada:', rows[0]);
+    }
     
     const W = weightsNow();
+    console.log('⚖️ Pesos:', W);
+    
     const scored = computeScores(rows, W);
+    console.log('📈 Escolas com score:', scored.length);
+    
+    if (scored.length > 0) {
+        console.log('🔍 Primeira escola com score:', scored[0]);
+    }
+    
     calcBands(scored);
     updateHelpWeights(W);
 
@@ -1453,6 +1481,8 @@ function apply() {
     renderScatter(scored);
     renderTable(scored);
     renderLegend(scored);
+    
+    console.log('✅ Apply concluído');
 }
 
 function renderKPIs(rows) {
@@ -1639,6 +1669,9 @@ function renderScatter(rows) {
 }
 
 function renderTable(rows) {
+    console.log('📊 renderTable chamada com', rows.length, 'escolas');
+    console.log('🔍 Primeira escola:', rows[0]);
+    
     const tbody = document.querySelector('#tbl tbody');
     tbody.innerHTML = '';
     rows.sort((a, b) => (b._score ?? -1) - (a._score ?? -1));
@@ -1646,11 +1679,13 @@ function renderTable(rows) {
     const topN = Number($('#topN').value || 0);
     const show = topN ? rows.slice(0, topN) : rows;
     
+    console.log('📋 Mostrando', show.length, 'escolas na tabela');
+    
     show.forEach((r, idx) => {
         const tr = document.createElement('tr');
         const td = v => {
             const t = document.createElement('td');
-            t.textContent = (v ?? '');
+            t.textContent = (v === null || v === undefined) ? '' : String(v);
             return t;
         };
         
@@ -1679,6 +1714,8 @@ function renderTable(rows) {
         tr.appendChild(td(r._score == null ? '' : r._score.toFixed(3)));
         tbody.appendChild(tr);
     });
+    
+    console.log('✅ Tabela renderizada com sucesso');
 }
 
 function exportCSV() {
@@ -1767,12 +1804,20 @@ function splitCSVLine(line, sep) {
 
 function ingest(rawRows) {
     console.log('📊 Carregando dados...', rawRows.length, 'linhas brutas');
+    console.log('🔍 Amostra linha bruta:', rawRows[0]);
     
-    const rows = rawRows.map(renameCols).map(coerceTypes);
+    // Aplicar renomeação de colunas
+    const renamed = rawRows.map(renameCols);
+    console.log('📝 Após renomear colunas:', renamed.length, 'linhas');
+    console.log('🔍 Primeira linha renomeada:', renamed[0]);
+    console.log('📋 Chaves após renomear:', Object.keys(renamed[0] || {}));
+    
+    // Aplicar coerção de tipos
+    const rows = renamed.map(coerceTypes);
+    console.log('🔢 Após coerção de tipos:', rows.length, 'linhas');
+    console.log('🔍 Primeira linha final:', rows[0]);
     
     console.log('✓ Dados processados:', rows.length, 'escolas');
-    console.log('📋 Colunas encontradas:', Object.keys(rows[0] || {}));
-    console.log('🔍 Amostra de dados:', rows.slice(0, 2));
     
     window._rowsRaw = rows;
     renderFilterChips();
@@ -1851,4 +1896,5 @@ function updateHelpWeights(W) {
 })();
     </script>
 </body>
-</html>
+    </html>
+
