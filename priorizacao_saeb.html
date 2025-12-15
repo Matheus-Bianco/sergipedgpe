@@ -1290,11 +1290,20 @@ function truthy3Ano(v) {
 
 function renameCols(row) {
     const out = {};
+    const keys = Object.keys(row);
+    
+    if (keys.length === 1) {
+        console.warn('⚠️ PROBLEMA: Linha tem apenas 1 chave:', keys[0]);
+        console.warn('⚠️ Valor dessa chave:', row[keys[0]].substring(0, 200));
+        console.warn('⚠️ Isso indica que o CSV não foi parseado corretamente!');
+    }
+    
     for (const [k, v] of Object.entries(row)) {
         const kk = (k || '').trim();
         const key = COL_MAP[kk] || kk;
         out[key] = v;
     }
+    
     return out;
 }
 
@@ -1748,12 +1757,36 @@ async function tryFetch(url, type) {
         if (type === 'json') {
             return await res.json();
         } else {
-            const txt = await res.text();
-            const guessSep = (txt.indexOf(';') > txt.indexOf(',')) ? ';' : ',';
+            let txt = await res.text();
+            
+            // Remover BOM (Byte Order Mark) se existir
+            if (txt.charCodeAt(0) === 0xFEFF) {
+                console.log('🔧 Removendo BOM do CSV');
+                txt = txt.substring(1);
+            }
+            
+            console.log('📄 Tamanho do CSV:', txt.length, 'caracteres');
+            console.log('📄 Primeiras 200 caracteres:', txt.substring(0, 200));
+            
+            // Contar ocorrências de ; e , na primeira linha
+            const firstLine = txt.split(/\r?\n/)[0];
+            const semiCount = (firstLine.match(/;/g) || []).length;
+            const commaCount = (firstLine.match(/,/g) || []).length;
+            
+            console.log('🔍 Primeira linha do CSV:', firstLine.substring(0, 200));
+            console.log('🔢 Ponto e vírgula (;):', semiCount);
+            console.log('🔢 Vírgulas (,):', commaCount);
+            
+            // Escolher o separador com mais ocorrências
+            const guessSep = semiCount > commaCount ? ';' : ',';
+            console.log('✅ Separador escolhido:', guessSep === ';' ? 'ponto e vírgula (;)' : 'vírgula (,)');
+            
             const lines = txt.split(/\r?\n/).filter(l => l.trim().length);
             
             // Processa cabeçalho
             const head = splitCSVLine(lines[0], guessSep);
+            console.log('📋 Colunas detectadas:', head.length, 'colunas');
+            console.log('📋 Primeiras 5 colunas:', head.slice(0, 5));
             
             // Processa linhas de dados
             const rows = lines.slice(1).map(line => {
@@ -1764,6 +1797,8 @@ async function tryFetch(url, type) {
                 });
                 return obj;
             });
+            
+            console.log('✅ CSV parseado:', rows.length, 'linhas');
             return rows;
         }
     } catch (err) {
@@ -1896,5 +1931,5 @@ function updateHelpWeights(W) {
 })();
     </script>
 </body>
-    </html>
+</html>
 
