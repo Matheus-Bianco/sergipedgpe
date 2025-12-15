@@ -1,725 +1,1701 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 25 08:34:30 2025
-
-@author: mathe
-"""
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Painel de Priorização – SAEB 2025</title>
-<style>
-  :root {
-    --bg: #f3f6fb; --card: #ffffff; --ink: #0d1b2a; --ink2:#3d5168;
-    --brand: #0b3a7e; --border:#e2e8f0; --muted:#718096;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-  header{background:linear-gradient(90deg,var(--brand),#143f8b 60%,#1f4aa8);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
-  header h1{margin:0;font-size:20px}
-  .wrap{display:grid;grid-template-columns:320px 1fr;gap:16px;padding:16px}
-  .sidebar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
-  .content{display:grid;grid-template-rows:auto 1fr auto;gap:16px}
-  .kpis{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-    gap:12px
-  }
-  .kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
-  .kpi .v{font-size:22px;font-weight:700}
-  .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px}
-  h3{margin:6px 0 10px 0;font-size:16px}
-  select,input[type=range],input[type=checkbox]{width:100%}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .group{margin-bottom:12px}
-  .sliders .row{display:grid;grid-template-columns:120px 1fr 48px;gap:8px;align-items:center}
-  .btn{display:inline-block;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:#f8fafc;cursor:pointer}
-  .btn:hover{background:#eef2f7}
-  .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:#5b6777}
-  .legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
-  table{width:100%;border-collapse:collapse}
-  th,td{padding:8px;border-bottom:1px solid var(--border);font-size:13px;text-align:left}
-  th{position:sticky;top:0;background:#fff}
-  .tbl-wrap{max-height:360px;overflow:auto}
-  .scatter-wrap{width:100%;height:520px;position:relative}
-  .tooltip{position:absolute;pointer-events:none;background:#10131a;color:#fff;font-size:12px;padding:6px 8px;border-radius:8px;opacity:0;transition:opacity .15s}
-  .note{font-size:12px;color:#5b6777}
-  .row-actions{display:flex;gap:8px;align-items:center}
-  .hidden{display:none}
-/* — Modal de ajuda — */
-  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.55);
-   display:flex;align-items:center;justify-content:center;z-index:1000}
-  .modal{background:#fff;border-radius:14px;border:1px solid var(--border);
-  box-shadow:0 10px 40px rgba(0,0,0,.2);width:min(920px,calc(100% - 40px));
-   max-height:85vh;display:flex;flex-direction:column}
-  .modal-head{display:flex;justify-content:space-between;align-items:center;
-   padding:14px 16px;border-bottom:1px solid var(--border)}
-  .modal-body{padding:16px;overflow:auto;font-size:14px;color:var(--ink2)}
-  .modal-body h4{margin:12px 0 6px 0}
-  .badge{display:inline-block;background:#eef2f7;border:1px solid var(--border);
-   border-radius:999px;padding:2px 8px;font-size:12px;margin-right:6px}
-  .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  .hidden{display:none}
-  
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priorização SAEB 2025 — Gestão para Aprendizagem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --azul-escuro: #0b5fa5;
+            --azul-medio: #1e90ff;
+            --azul-claro: #4da6ff;
+            --azul-pastel: #f1f9ff;
+            --cinza-texto: #666666;
+            --branco: #FFFFFF;
+            --sombra-suave: 0 4px 15px rgba(11, 95, 165, 0.1);
+            --sombra-hover: 0 8px 25px rgba(11, 95, 165, 0.2);
+            --border: #e2e8f0;
+            --sidebar-width: 320px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--azul-pastel);
+            color: var(--cinza-texto);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+            padding: 1.5rem 0;
+            box-shadow: var(--sombra-suave);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo { 
+            height: 50px; 
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .header-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-title {
+            color: var(--branco);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-header {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--branco);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-header:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* LAYOUT */
+        .main-container {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            gap: 0;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: var(--branco);
+            padding: 2rem 1.5rem;
+            height: calc(100vh - 90px);
+            overflow-y: auto;
+            position: sticky;
+            top: 90px;
+            box-shadow: 2px 0 15px rgba(11, 95, 165, 0.08);
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-title {
+            color: var(--azul-escuro);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--cinza-texto);
+            margin-bottom: 0.4rem;
+        }
+
+        select, input[type="checkbox"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--azul-medio);
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem;
+            background: var(--azul-pastel);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-group:hover {
+            background: #e3f2fd;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Sliders de peso */
+        .weight-slider {
+            margin-bottom: 1.2rem;
+        }
+
+        .weight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .weight-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--cinza-texto);
+        }
+
+        .weight-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--azul-escuro);
+            background: var(--azul-pastel);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--azul-escuro);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--azul-medio);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--azul-escuro);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        /* Botões da sidebar */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+            color: var(--branco);
+            padding: 0.7rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(11, 95, 165, 0.3);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: var(--branco);
+            color: var(--azul-escuro);
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--azul-pastel);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-note {
+            font-size: 0.75rem;
+            color: #64748b;
+            background: #f8fafc;
+            padding: 0.6rem;
+            border-radius: 6px;
+            line-height: 1.4;
+            margin-top: 0.5rem;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Status de dados */
+        .data-status {
+            background: var(--branco);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--azul-pastel);
+            color: var(--azul-escuro);
+            flex-shrink: 0;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: var(--azul-escuro);
+            margin-bottom: 0.2rem;
+        }
+
+        .status-description {
+            font-size: 0.85rem;
+            color: var(--cinza-texto);
+        }
+
+        /* KPIs */
+        .kpis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-card {
+            background: var(--branco);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--sombra-suave);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--cinza-texto);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--azul-escuro);
+        }
+
+        /* Cards de conteúdo */
+        .content-card {
+            background: var(--branco);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: var(--sombra-suave);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--azul-pastel);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--azul-escuro);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .card-actions select {
+            width: auto;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-small {
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+            color: var(--branco);
+            padding: 0.4rem 0.9rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-small:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(11, 95, 165, 0.3);
+        }
+
+        /* Scatter plot */
+        .scatter-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            background: #fafbfc;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .scatter-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: end;
+        }
+
+        .axis-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .axis-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--cinza-texto);
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(13, 27, 42, 0.95);
+            color: var(--branco);
+            font-size: 0.8rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            color: var(--cinza-texto);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Tabela */
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 600px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+            z-index: 10;
+        }
+
+        th {
+            padding: 0.9rem 0.8rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--branco);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--azul-pastel);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .priority-alta {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority-media {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-baixa {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--branco);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: min(900px, 100%);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--azul-pastel) 0%, #e3f2fd 100%);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--azul-escuro);
+            margin: 0;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--cinza-texto);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: rgba(11, 95, 165, 0.1);
+            color: var(--azul-escuro);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            color: var(--cinza-texto);
+            line-height: 1.7;
+        }
+
+        .modal-body h4 {
+            color: var(--azul-escuro);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.8rem 0;
+            font-weight: 600;
+        }
+
+        .modal-body h4:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body ul {
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+
+        .modal-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .formula-box {
+            background: #f8fafc;
+            border-left: 3px solid var(--azul-escuro);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .weight-display {
+            background: var(--azul-pastel);
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .weight-display strong {
+            color: var(--azul-escuro);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsivo */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 280px 1fr;
+            }
+            
+            :root {
+                --sidebar-width: 280px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .header-title {
+                font-size: 1.3rem;
+            }
+
+            .header-subtitle {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .header-left {
+                flex-direction: column;
+            }
+
+            .kpis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .scatter-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .card-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .card-actions select,
+            .btn-small {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  <h1>Gestão para Aprendizagem – Sergipe • Priorização SAEB 2025</h1>
-  <div class="row-actions">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <svg class="logo" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                </svg>
+            </div>
+            <div class="header-text">
+                <h1 class="header-title">Priorização de Escolas — SAEB 2025</h1>
+                <p class="header-subtitle">Sistema de Score e Ranking para Planejamento Estratégico</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-header" id="helpBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+                    </svg>
+                    Ajuda
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <!-- Status dos dados -->
+            <div class="sidebar-section">
+                <div class="data-status">
+                    <div class="status-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3 0 1.13-.64 2.11-1.56 2.62l1.45 1.45C23.16 18.16 24 16.68 24 15c0-2.64-2.05-4.78-4.65-4.96zM3 5.27l2.75 2.74C2.56 8.15 0 10.77 0 14c0 3.31 2.69 6 6 6h11.73l2 2L21 20.73 4.27 4 3 5.27zM7.73 10l8 8H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h1.73z"/>
+                        </svg>
+                    </div>
+                    <div class="status-text">
+                        <div class="status-title">Status dos Dados</div>
+                        <div class="status-description" id="dataStatus">Carregando dados...</div>
+                    </div>
+                </div>
+                <div class="info-note">
+                    O sistema carrega automaticamente os dados de <code>csv.priorizacao.csv</code> ou permite upload manual via botão "Carregar Dados" no cabeçalho.
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                    </svg>
+                    Filtros de Visualização
+                </h3>
+
+                <div class="filter-group">
+                    <label class="filter-label">Diretoria Regional de Educação</label>
+                    <select id="f_dre" multiple size="6"></select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Tipo de Ensino</label>
+                    <select id="f_tipo" multiple size="4"></select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Categoria</label>
+                    <select id="f_cat" multiple size="4"></select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Área Urbana</label>
+                    <select id="f_urb" multiple size="3"></select>
+                </div>
+
+                <div class="filter-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="f_3ano">
+                        <label for="f_3ano">Somente escolas com 3º ano</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="f_sem_saeb">
+                        <label for="f_sem_saeb">Somente sem SAEB 2023</label>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" id="applyBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        Aplicar
+                    </button>
+                    <button class="btn-secondary" id="clearBtn">Limpar</button>
+                </div>
+            </div>
+
+            <!-- Pesos dos Critérios -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4zM13 14H9v-2h4v2zm2-4H9V8h6v2z"/>
+                        </svg>
+                    Pesos dos Critérios
+                </h3>
+
+                <div class="weight-slider">
+                    <div class="weight-header">
+                        <span class="weight-label">Participação</span>
+                        <span class="weight-value" id="w_part_val">0.40</span>
+                    </div>
+                    <input type="range" id="w_part" min="0" max="100" value="40">
+                </div>
+
+                <div class="weight-slider">
+                    <div class="weight-header">
+                        <span class="weight-label">Desempenho</span>
+                        <span class="weight-value" id="w_perf_val">0.50</span>
+                    </div>
+                    <input type="range" id="w_perf" min="0" max="100" value="50">
+                </div>
+
+                <div class="weight-slider">
+                    <div class="weight-header">
+                        <span class="weight-label">Tamanho</span>
+                        <span class="weight-value" id="w_size_val">0.10</span>
+                    </div>
+                    <input type="range" id="w_size" min="0" max="100" value="10">
+                </div>
+
+                <button class="btn-primary" id="recalcBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
+                    </svg>
+                    Recalcular Score
+                </button>
+
+                <div class="info-note">
+                    Os pesos são normalizados automaticamente. Ajuste os sliders e clique em "Recalcular Score" para ver o impacto no ranking.
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+            <!-- KPIs -->
+            <div class="kpis-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Escolas no filtro</div>
+                    <div class="kpi-value" id="k_escolas">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">% com 3º ano</div>
+                    <div class="kpi-value" id="k_3ano">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Média Part. SAEB 23</div>
+                    <div class="kpi-value" id="k_part">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Prioridade Alta</div>
+                    <div class="kpi-value" id="k_alta">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Sem SAEB 2023</div>
+                    <div class="kpi-value" id="k_sem_saeb">—</div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Dispersão -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                        Mapa de Prioridade
+                    </h2>
+                    <div id="legend" class="legend"></div>
+                </div>
+
+                <div class="scatter-controls">
+                    <div class="axis-selector">
+                        <label class="axis-label">Eixo X</label>
+                        <select id="x_axis">
+                            <option value="part">Participação (prioridade)</option>
+                            <option value="perf">Desempenho (prioridade)</option>
+                            <option value="size">Tamanho (normalizado)</option>
+                            <option value="score" selected>Score de prioridade</option>
+                        </select>
+                    </div>
+                    <div class="axis-selector">
+                        <label class="axis-label">Eixo Y</label>
+                        <select id="y_axis">
+                            <option value="perf" selected>Desempenho (prioridade)</option>
+                            <option value="part">Participação (prioridade)</option>
+                            <option value="size">Tamanho (normalizado)</option>
+                            <option value="score">Score de prioridade</option>
+                        </select>
+                    </div>
+                    <button class="btn-small" id="updatePlotBtn">Atualizar</button>
+                </div>
+
+                <div class="scatter-container">
+                    <svg id="scatter"></svg>
+                    <div class="tooltip" id="tip"></div>
+                </div>
+
+                <div class="info-note">
+                    <strong>Dica:</strong> Tamanho do ponto = número de alunos | Cor do ponto = DRE | Borda do ponto = nível de prioridade | Linhas tracejadas = medianas
+                </div>
+            </div>
+
+            <!-- Tabela de Ranking -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                        </svg>
+                        Ranking de Escolas
+                    </h2>
+                    <div class="card-actions">
+                        <label class="filter-label">Mostrar Top</label>
+                        <select id="topN">
+                            <option value="0">Todas</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <button class="btn-small" id="exportBtn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/>
+                            </svg>
+                            Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="tbl">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Escola</th>
+                                <th>DRE</th>
+                                <th>Tipo</th>
+                                <th>Alunos</th>
+                                <th>Part. SAEB23</th>
+                                <th>Part. Plurall</th>
+                                <th>SAEB23 PT</th>
+                                <th>SAEB23 MAT</th>
+                                <th>SAESE24 PT</th>
+                                <th>SAESE24 MAT</th>
+                                <th>Rend. PT</th>
+                                <th>Rend. MAT</th>
+                                <th>Prioridade</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE AJUDA -->
+    <div class="modal-backdrop" id="helpOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Como funciona o Sistema de Priorização</h3>
+                <button class="btn-close" id="helpClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <h4>📊 Objetivo do Painel</h4>
+                <p>
+                    Este sistema calcula um <strong>Score de Prioridade</strong> para cada escola com base em três dimensões: 
+                    <strong>Participação</strong>, <strong>Desempenho</strong> e <strong>Tamanho</strong>. 
+                    O objetivo é identificar escolas que necessitam de atenção especial para o SAEB 2025.
+                </p>
+
+                <h4>🔢 Como o Score é Calculado</h4>
+                <div class="formula-box">
+                    <strong>1. Normalização (Min-Max):</strong><br>
+                    Para cada indicador x no conjunto filtrado:<br>
+                    • valor_norm = (x - min) / (max - min)<br>
+                    • Resultado: valores entre 0 e 1<br><br>
+
+                    <strong>2. Inversão para Prioridade:</strong><br>
+                    • Participação e Desempenho: prioridade = 1 - valor_norm<br>
+                    • (quanto menor, maior a prioridade)<br>
+                    • Tamanho: mantém valor_norm (escolas maiores = maior prioridade)<br><br>
+
+                    <strong>3. Agregação dos Componentes:</strong><br>
+                    • Participação: média das métricas de frequência disponíveis<br>
+                    • Desempenho: média das notas de avaliações disponíveis<br>
+                    • Tamanho: valor normalizado do número de alunos<br><br>
+
+                    <strong>4. Score Final:</strong><br>
+                    Score = (w_part × Part + w_perf × Perf + w_size × Size) / soma_pesos
+                </div>
+
+                <div class="weight-display">
+                    <strong>Pesos atuais:</strong> 
+                    Participação = <span id="help_w_part">0.40</span> • 
+                    Desempenho = <span id="help_w_perf">0.50</span> • 
+                    Tamanho = <span id="help_w_size">0.10</span>
+                </div>
+
+                <h4>📋 Indicadores Utilizados</h4>
+                <ul>
+                    <li><strong>Participação:</strong> Taxa de participação SAEB 2023, Taxa de participação Plurall</li>
+                    <li><strong>Desempenho:</strong> SAEB 2023 (PT e MAT), SAESE 2024 (PT e MAT), Rendimento Plurall (PT e MAT)</li>
+                    <li><strong>Tamanho:</strong> Número total de alunos matriculados</li>
+                </ul>
+
+                <h4>🎯 Classificação de Prioridade</h4>
+                <p>
+                    As escolas são classificadas em três níveis com base nos tercis da distribuição do score:
+                </p>
+                <ul>
+                    <li><span class="priority-badge priority-alta">Alta</span> — Terço superior (maior urgência)</li>
+                    <li><span class="priority-badge priority-media">Média</span> — Terço intermediário</li>
+                    <li><span class="priority-badge priority-baixa">Baixa</span> — Terço inferior (menor urgência)</li>
+                </ul>
+
+                <h4>💡 Dicas de Uso</h4>
+                <ul>
+                    <li>Use os <strong>filtros</strong> para focar em grupos específicos de escolas</li>
+                    <li>Ajuste os <strong>pesos</strong> para simular diferentes cenários de priorização</li>
+                    <li>No gráfico, escolas no <strong>canto superior direito</strong> (alta prioridade em ambos os eixos) merecem atenção especial</li>
+                    <li>Exporte os dados para análises mais aprofundadas em planilhas</li>
+                    <li>A linha vermelha tracejada indica o limiar de 80% de participação (meta)</li>
+                </ul>
+
+                <h4>🔄 Fluxo de Trabalho Recomendado</h4>
+                <ol>
+                    <li>Selecione os filtros desejados (DRE, tipo de ensino, etc.)</li>
+                    <li>Ajuste os pesos conforme sua estratégia de intervenção</li>
+                    <li>Clique em "Aplicar" ou "Recalcular Score"</li>
+                    <li>Analise o gráfico de dispersão para identificar padrões</li>
+                    <li>Consulte a tabela de ranking para ver detalhes das escolas prioritárias</li>
+                    <li>Exporte os resultados para compartilhar com a equipe</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input oculto para upload manual -->
     <input id="fileInput" type="file" accept=".json,.csv" class="hidden">
-    <button class="btn" id="pickBtn">📂 Carregar arquivo</button>
-    <button class="btn" id="helpBtn">❓ Ajuda</button>
-  </div>
-</header>
 
-<div class="wrap">
-  <aside class="sidebar">
-    <h3>Fonte de dados</h3>
-    <div class="group">
-      <div class="note">O painel tenta carregar <code>dados.json</code> ou <code>dados.csv</code> da mesma pasta.
-        Se estiver abrindo via <code>file://</code>, use <b>Carregar arquivo</b> acima.</div>
-      <div id="dataStatus" class="note" style="margin-top:6px;">Status: aguardando dados…</div>
-    </div>
-
-    <h3>Filtros</h3>
-    <div class="group grid-2">
-      <div><label>DRE</label><select id="f_dre" multiple size="6"></select></div>
-      <div><label>Tipo de Ensino</label><select id="f_tipo" multiple size="6"></select></div>
-      <div><label>Categoria</label><select id="f_cat" multiple size="6"></select></div>
-      <div><label>Área Urbana</label><select id="f_urb" multiple size="6"></select></div>
-    </div>
-    <div class="group"><label><input id="f_3ano" type="checkbox"> Somente escolas com 3º ano</label></div>
-    <div class="group"><label><input id="f_sem_saeb" type="checkbox">Somente escolas sem SAEB 23 (PT e MAT vazios)</label></div>
-    <div class="group row-actions">
-      <button class="btn" id="applyBtn">🔎 Aplicar filtros</button>
-      <button class="btn" id="clearBtn">Limpar</button>
-    </div>
-
-    <h3>Pesos dos Critérios</h3>
-    <div class="sliders">
-      <div class="row"><label>Participação</label><input id="w_part" type="range" min="0" max="100" value="40"><div id="w_part_val">0.40</div></div>
-      <div class="row"><label>Desempenho</label><input id="w_perf" type="range" min="0" max="100" value="50"><div id="w_perf_val">0.50</div></div>
-      <div class="row"><label>Tamanho</label><input id="w_size" type="range" min="0" max="100" value="10"><div id="w_size_val">0.10</div></div>
-      <div class="row-actions"><button class="btn" id="recalcBtn">⚙️ Recalcular score</button></div>
-      <div class="note">Pesos são lidos ao clicar em “Aplicar filtros” ou “Recalcular score”.</div>
-    </div>
-
-    <h3>Visualização</h3>
-    <div class="group">
-      <label>Eixos do Dispersão</label>
-      <div class="grid-2">
-        <div><label>X</label>
-          <select id="x_axis">
-            <option value="part">Participação (prioridade)</option>
-            <option value="perf">Desempenho (prioridade)</option>
-            <option value="size">Tamanho (normalizado)</option>
-            <option value="score" selected>Score de prioridade</option>
-          </select>
-        </div>
-        <div><label>Y</label>
-          <select id="y_axis">
-            <option value="perf" selected>Desempenho (prioridade)</option>
-            <option value="part">Participação (prioridade)</option>
-            <option value="size">Tamanho (normalizado)</option>
-            <option value="score">Score de prioridade</option>
-          </select>
-        </div>
-      </div>
-      <div class="row-actions" style="margin-top:8px;"><button class="btn" id="updatePlotBtn">Atualizar gráfico</button></div>
-      <div class="note" style="margin-top:6px;">Dica: X=Participação / Y=Desempenho destaca escolas com baixa participação e desempenho (canto superior direito).</div>
-    </div>
-  </aside>
-
-  <main class="content">
-    <div class="kpis">
-      <div class="kpi"><div class="label">Escolas</div><div id="k_escolas" class="v">–</div></div>
-      <div class="kpi"><div class="label">% com 3º ano</div><div id="k_3ano" class="v">–</div></div>
-      <div class="kpi"><div class="label">Média Part. SAEB23</div><div id="k_part" class="v">–</div></div>
-      <div class="kpi"><div class="label">Escolas com Prioridade Alta</div><div id="k_alta" class="v">–</div></div>
-      <div class="kpi"><div class="label">Escolas sem SAEB 23</div><div id="k_sem_saeb" class="v">–</div></div>
-    </div>
-
-    <div class="panel">
-      <div class="row-actions" style="justify-content:space-between;margin-bottom:8px;">
-        <h3>Mapa de Prioridade (Dispersão)</h3>
-        <div class="legend" id="legend"></div>
-      </div>
-      <div class="scatter-wrap">
-        <svg id="scatter" width="100%" height="100%"></svg>
-        <div class="tooltip" id="tip"></div>
-      </div>
-      <div class="note">Tamanho do ponto ∝ Número de alunos. Cores por DRE. Linhas pontilhadas = medianas.</div>
-    </div>
-
-    <div class="panel">
-      <div class="row-actions" style="justify-content:space-between;margin-bottom:8px;">
-        <h3>Ranking de Escolas (Score de Prioridade)</h3>
-        <div>
-          <label style="font-size:12px;color:#5b6777">Mostrar Top</label>
-          <select id="topN" style="width:120px;">
-            <option value="0">Todas</option><option value="25">25</option><option value="50">50</option><option value="100">100</option>
-          </select>
-          <button class="btn" id="exportBtn">Exportar CSV</button>
-        </div>
-      </div>
-      <div class="tbl-wrap">
-        <table id="tbl">
-          <thead><tr>
-            <th>#</th><th>Escola</th><th>DRE</th><th>Tipo</th><th>Alunos</th>
-            <th>Part. SAEB23</th><th>Part. Plurall</th>
-            <th>SAEB23 PT</th><th>SAEB23 MAT</th><th>SAESE24 PT</th><th>SAESE24 MAT</th>
-            <th>Rend. PT</th><th>Rend. MAT</th><th>Prioridade</th><th>Score</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-</div>
-
-<script>
-/* ================== CONFIG: arquivos no mesmo diretório ================== */
-// tenta primeiro o arquivo no próprio repositório (mesma pasta)
+    <script>
+/* ================== CONFIGURAÇÃO ================== */
 const DATA_SOURCES = [
-  { type: 'csv', url: './csv.priorizacao.csv' }, // ou './dados.csv'
-  // fallbacks opcionais (se você mover para uma subpasta):
-  { type: 'csv', url: './data/csv.priorizacao.csv' },
-  { type: 'json', url: './dados.json' }
+    { type: 'csv', url: './csv.priorizacao.csv' },
+    { type: 'csv', url: './data/csv.priorizacao.csv' },
+    { type: 'json', url: './dados.json' }
 ];
 
-
-/* ============== MAPEAMENTO de colunas (aba "Geral" -> chaves internas) ============== */
 const COL_MAP = {
-  'ID Escola':'id_escola','ID Inep':'id_inep','Escola':'escola','DRE':'dre',
-  'Tipo de Ensino':'tipo_ensino','Possui 3o Ano':'possui_3o_ano','Possui 3º Ano':'possui_3o_ano',
-  'Área Urbana':'area_urbana','Categoria':'categoria',
-  'SAEB 23 Taxa Participação':'saeb23_participacao',
-  'SAEB 23 Nota Média PT':'saeb23_pt',
-  'SAEB 23 Nota Média Mat':'saeb23_mat',
-  'SAESE 24 Proficiência PT':'saese24_pt',
-  'SAESE 24 Proficiência MAT':'saese24_mat',
-  'Participação Avaliação Plurall':'plurall_participacao',
-  'Rendimento Médio Língua Portuguesa Plurall':'plurall_rend_pt',
-  'Rendimento Médio Matemática Plurall':'plurall_rend_mat',
-  'Número de Alunos':'num_alunos'
+    'ID Escola':'id_escola','ID Inep':'id_inep','Escola':'escola','DRE':'dre',
+    'Tipo de Ensino':'tipo_ensino','Possui 3o Ano':'possui_3o_ano','Possui 3º Ano':'possui_3o_ano',
+    'Área Urbana':'area_urbana','Categoria':'categoria',
+    'SAEB 23 Taxa Participação':'saeb23_participacao',
+    'SAEB 23 Nota Média PT':'saeb23_pt',
+    'SAEB 23 Nota Média Mat':'saeb23_mat',
+    'SAESE 24 Proficiência PT':'saese24_pt',
+    'SAESE 24 Proficiência MAT':'saese24_mat',
+    'Participação Avaliação Plurall':'plurall_participacao',
+    'Rendimento Médio Língua Portuguesa Plurall':'plurall_rend_pt',
+    'Rendimento Médio Matemática Plurall':'plurall_rend_mat',
+    'Número de Alunos':'num_alunos'
 };
 
-/* ================== UTILs ================== */
 const palette = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b",
                  "#e377c2","#7f7f7f","#bcbd22","#17becf","#1b9e77","#d95f02"];
 
-const $ = (sel)=>document.querySelector(sel);
+/* ================== UTILITÁRIOS ================== */
+const $ = (sel) => document.querySelector(sel);
+
 function fillSelect(id, values) {
-  const el = document.getElementById(id);
-  el.innerHTML = values.map(v => `<option value="${String(v)}">${String(v)}</option>`).join('');
+    const el = document.getElementById(id);
+    el.innerHTML = values.map(v => `<option value="${String(v)}">${String(v)}</option>`).join('');
 }
-function getSelectedValues(sel) { return Array.from(sel.selectedOptions).map(o => o.value); }
+
+function getSelectedValues(sel) {
+    return Array.from(sel.selectedOptions).map(o => o.value);
+}
+
 function normalizeArr(values) {
-  const arr = values.filter(v => v !== null && !isNaN(v));
-  if (!arr.length) return { norm: v => null, min:0, max:1 };
-  const min = Math.min(...arr), max = Math.max(...arr), span = (max-min)||1;
-  return { norm: v => (v===null||isNaN(v))?null:(v-min)/span, min, max };
+    const arr = values.filter(v => v !== null && !isNaN(v));
+    if (!arr.length) return { norm: v => null, min: 0, max: 1 };
+    const min = Math.min(...arr), max = Math.max(...arr), span = (max - min) || 1;
+    return { norm: v => (v === null || isNaN(v)) ? null : (v - min) / span, min, max };
 }
+
 function median(arr) {
-  const a = arr.filter(v => v!==null && !isNaN(v)).slice().sort((x,y)=>x-y);
-  if (!a.length) return null;
-  const m = Math.floor(a.length/2);
-  return a.length%2 ? a[m] : (a[m-1]+a[m])/2;
-}
-function toNumber(x){
-  if (x===null || x===undefined) return null;
-  if (typeof x === 'number') return isFinite(x) ? x : null;
-  let s = String(x).trim();
-  if (!s) return null;
-  // trata porcentagens e vírgula decimal brasileira
-  const isPct = s.endsWith('%');
-  s = s.replace('%','').replace(/\./g,'').replace(',', '.'); // "1.234,56" -> "1234.56"
-  const v = Number(s);
-  return isNaN(v) ? null : v; // mantemos como número "em porcentagem" (ex.: 72.3)
-}
-function truthy3Ano(v){
-  if (v===true || v===1) return true;
-  const s = String(v||'').toLowerCase();
-  return ['sim','true','1','x'].includes(s);
-}
-function renameCols(row){
-  // aceita JSON já com chaves internas ou com cabeçalhos originais
-  const out = {};
-  for (const [k,v] of Object.entries(row)){
-    const kk = (k||'').trim();
-    const key = COL_MAP[kk] || kk;
-    out[key] = v;
-  }
-  return out;
-}
-function coerceTypes(r){
-  const o = {...r};
-  // numéricos
-  ['saeb23_participacao','saeb23_pt','saeb23_mat','saese24_pt','saese24_mat',
-   'plurall_participacao','plurall_rend_pt','plurall_rend_mat','num_alunos']
-   .forEach(k => o[k] = toNumber(o[k]));
-  // boolean-like
-  o['possui_3o_ano'] = truthy3Ano(o['possui_3o_ano']);
-  return o;
+    const a = arr.filter(v => v !== null && !isNaN(v)).slice().sort((x, y) => x - y);
+    if (!a.length) return null;
+    const m = Math.floor(a.length / 2);
+    return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
 }
 
-// ---- Faixas de prioridade por distribuição atual (tercis) ----
-function quantile(sorted, q){
-  if (!sorted.length) return null;
-  const pos = (sorted.length - 1) * q;
-  const base = Math.floor(pos), rest = pos - base;
-  return sorted[base] + ((sorted[base+1] ?? sorted[base]) - sorted[base]) * rest;
+function toNumber(x) {
+    if (x === null || x === undefined) return null;
+    if (typeof x === 'number') return isFinite(x) ? x : null;
+    let s = String(x).trim();
+    if (!s) return null;
+    const isPct = s.endsWith('%');
+    s = s.replace('%', '').replace(/\./g, '').replace(',', '.');
+    const v = Number(s);
+    return isNaN(v) ? null : v;
 }
 
-let SCORE_BANDS = { q33: 0.33, q66: 0.66 }; // default
-function calcBands(scored){
-  const arr = scored.map(r=>r._score).filter(v=>v!=null).sort((a,b)=>a-b);
-  if (!arr.length){ SCORE_BANDS = {q33:0.33,q66:0.66}; return; }
-  SCORE_BANDS = { q33: quantile(arr, 1/3), q66: quantile(arr, 2/3) };
+function truthy3Ano(v) {
+    if (v === true || v === 1) return true;
+    const s = String(v || '').toLowerCase();
+    return ['sim', 'true', '1', 'x'].includes(s);
 }
 
-function classifyScore(v){
-  if (v==null) return {label:'—', color:'#64748b'};
-  if (v >= SCORE_BANDS.q66) return {label:'Alta',  color:'#e11d48'};  // vermelho
-  if (v >= SCORE_BANDS.q33) return {label:'Média', color:'#f59e0b'};  // amarelo
-  return {label:'Baixa', color:'#10b981'};                             // verde
+function renameCols(row) {
+    const out = {};
+    for (const [k, v] of Object.entries(row)) {
+        const kk = (k || '').trim();
+        const key = COL_MAP[kk] || kk;
+        out[key] = v;
+    }
+    return out;
 }
 
+function coerceTypes(r) {
+    const o = { ...r };
+    ['saeb23_participacao', 'saeb23_pt', 'saeb23_mat', 'saese24_pt', 'saese24_mat',
+     'plurall_participacao', 'plurall_rend_pt', 'plurall_rend_mat', 'num_alunos']
+        .forEach(k => o[k] = toNumber(o[k]));
+    o['possui_3o_ano'] = truthy3Ano(o['possui_3o_ano']);
+    return o;
+}
+
+function quantile(sorted, q) {
+    if (!sorted.length) return null;
+    const pos = (sorted.length - 1) * q;
+    const base = Math.floor(pos), rest = pos - base;
+    return sorted[base] + ((sorted[base + 1] ?? sorted[base]) - sorted[base]) * rest;
+}
+
+let SCORE_BANDS = { q33: 0.33, q66: 0.66 };
+
+function calcBands(scored) {
+    const arr = scored.map(r => r._score).filter(v => v != null).sort((a, b) => a - b);
+    if (!arr.length) { SCORE_BANDS = { q33: 0.33, q66: 0.66 }; return; }
+    SCORE_BANDS = { q33: quantile(arr, 1 / 3), q66: quantile(arr, 2 / 3) };
+}
+
+function classifyScore(v) {
+    if (v == null) return { label: '—', color: '#64748b' };
+    if (v >= SCORE_BANDS.q66) return { label: 'Alta', color: '#e11d48' };
+    if (v >= SCORE_BANDS.q33) return { label: 'Média', color: '#f59e0b' };
+    return { label: 'Baixa', color: '#10b981' };
+}
 
 /* ================== CÁLCULO DO SCORE ================== */
 function computeScores(rows, weights) {
-  const get = (r,k) => (r[k]===null?null:Number(r[k]));
-  const part_cols = ['saeb23_participacao','plurall_participacao'];
-  const perf_cols = ['saeb23_pt','saeb23_mat','saese24_pt','saese24_mat','plurall_rend_pt','plurall_rend_mat'];
-  const size_cols = ['num_alunos'];
-  const normers={};
-  for (const c of [...part_cols,...perf_cols,...size_cols]) normers[c]=normalizeArr(rows.map(r=>get(r,c)));
-
-  return rows.map(r=>{
-    let part_vals = part_cols.map(c=>normers[c].norm(get(r,c))).filter(v=>v!==null).map(v=>1-v);
-    const part_score = part_vals.length?part_vals.reduce((a,b)=>a+b,0)/part_vals.length:null;
-
-    let perf_vals = perf_cols.map(c=>normers[c].norm(get(r,c))).filter(v=>v!==null).map(v=>1-v);
-    const perf_score = perf_vals.length?perf_vals.reduce((a,b)=>a+b,0)/perf_vals.length:null;
-
-    const size_val = normers['num_alunos'].norm(get(r,'num_alunos'));
-    const size_score = size_val===null?null:size_val;
-
-    const comps=[['part',part_score,weights.part],['perf',perf_score,weights.perf],['size',size_score,weights.size]];
-    const usable=comps.filter(([_,v,w])=>v!==null && w>0);
-    let score=null;
-    if (usable.length) {
-      const wsum=usable.reduce((a,c)=>a+c[2],0)||1;
-      score=usable.reduce((a,[_,v,w])=>a+(w/wsum)*v,0);
+    const get = (r, k) => (r[k] === null ? null : Number(r[k]));
+    const part_cols = ['saeb23_participacao', 'plurall_participacao'];
+    const perf_cols = ['saeb23_pt', 'saeb23_mat', 'saese24_pt', 'saese24_mat', 'plurall_rend_pt', 'plurall_rend_mat'];
+    const size_cols = ['num_alunos'];
+    const normers = {};
+    
+    for (const c of [...part_cols, ...perf_cols, ...size_cols]) {
+        normers[c] = normalizeArr(rows.map(r => get(r, c)));
     }
-    return {...r, _part:part_score, _perf:perf_score, _size:size_score, _score:score};
-  });
+
+    return rows.map(r => {
+        let part_vals = part_cols.map(c => normers[c].norm(get(r, c))).filter(v => v !== null).map(v => 1 - v);
+        const part_score = part_vals.length ? part_vals.reduce((a, b) => a + b, 0) / part_vals.length : null;
+
+        let perf_vals = perf_cols.map(c => normers[c].norm(get(r, c))).filter(v => v !== null).map(v => 1 - v);
+        const perf_score = perf_vals.length ? perf_vals.reduce((a, b) => a + b, 0) / perf_vals.length : null;
+
+        const size_val = normers['num_alunos'].norm(get(r, 'num_alunos'));
+        const size_score = size_val === null ? null : size_val;
+
+        const comps = [['part', part_score, weights.part], ['perf', perf_score, weights.perf], ['size', size_score, weights.size]];
+        const usable = comps.filter(([_, v, w]) => v !== null && w > 0);
+        let score = null;
+        
+        if (usable.length) {
+            const wsum = usable.reduce((a, c) => a + c[2], 0) || 1;
+            score = usable.reduce((a, [_, v, w]) => a + (w / wsum) * v, 0);
+        }
+        
+        return { ...r, _part: part_score, _perf: perf_score, _size: size_score, _score: score };
+    });
 }
-function weightsNow(){
-  const wp = Number(document.getElementById('w_part').value);
-  const wf = Number(document.getElementById('w_perf').value);
-  const ws = Number(document.getElementById('w_size').value);
-  const total = Math.max(wp+wf+ws,1);
-  const W = {part:wp/total, perf:wf/total, size:ws/total};
-  document.getElementById('w_part_val').textContent = W.part.toFixed(2);
-  document.getElementById('w_perf_val').textContent = W.perf.toFixed(2);
-  document.getElementById('w_size_val').textContent = W.size.toFixed(2);
-  return W;
+
+function weightsNow() {
+    const wp = Number($('#w_part').value);
+    const wf = Number($('#w_perf').value);
+    const ws = Number($('#w_size').value);
+    const total = Math.max(wp + wf + ws, 1);
+    const W = { part: wp / total, perf: wf / total, size: ws / total };
+    $('#w_part_val').textContent = W.part.toFixed(2);
+    $('#w_perf_val').textContent = W.perf.toFixed(2);
+    $('#w_size_val').textContent = W.size.toFixed(2);
+    return W;
 }
 
 /* ================== RENDER ================== */
-function apply(){
-  if (!Array.isArray(window._rowsRaw) || !window._rowsRaw.length) return;
+function apply() {
+    if (!Array.isArray(window._rowsRaw) || !window._rowsRaw.length) return;
 
-  const sel_dre  = getSelectedValues(document.getElementById('f_dre'));
-  const sel_tipo = getSelectedValues(document.getElementById('f_tipo'));
-  const sel_cat  = getSelectedValues(document.getElementById('f_cat'));
-  const sel_urb  = getSelectedValues(document.getElementById('f_urb'));
-  const only3    = document.getElementById('f_3ano').checked;
-  const onlyNoSaeb = document.getElementById('f_sem_saeb').checked;
+    const sel_dre = getSelectedValues($('#f_dre'));
+    const sel_tipo = getSelectedValues($('#f_tipo'));
+    const sel_cat = getSelectedValues($('#f_cat'));
+    const sel_urb = getSelectedValues($('#f_urb'));
+    const only3 = $('#f_3ano').checked;
+    const onlyNoSaeb = $('#f_sem_saeb').checked;
 
-  let rows = window._rowsRaw.slice();
-  if (sel_dre.length)  rows = rows.filter(r=> sel_dre.includes(String(r.dre)));
-  if (sel_tipo.length) rows = rows.filter(r=> sel_tipo.includes(String(r.tipo_ensino)));
-  if (sel_cat.length)  rows = rows.filter(r=> sel_cat.includes(String(r.categoria)));
-  if (sel_urb.length)  rows = rows.filter(r=> sel_urb.includes(String(r.area_urbana)));
-  if (only3)           rows = rows.filter(r=> r.possui_3o_ano===true);
-  if (onlyNoSaeb) {rows = rows.filter(r =>(r.saeb23_pt == null || isNaN(r.saeb23_pt)) && (r.saeb23_mat == null || isNaN(r.saeb23_mat)));}
+    let rows = window._rowsRaw.slice();
+    if (sel_dre.length) rows = rows.filter(r => sel_dre.includes(String(r.dre)));
+    if (sel_tipo.length) rows = rows.filter(r => sel_tipo.includes(String(r.tipo_ensino)));
+    if (sel_cat.length) rows = rows.filter(r => sel_cat.includes(String(r.categoria)));
+    if (sel_urb.length) rows = rows.filter(r => sel_urb.includes(String(r.area_urbana)));
+    if (only3) rows = rows.filter(r => r.possui_3o_ano === true);
+    if (onlyNoSaeb) {
+        rows = rows.filter(r =>
+            (r.saeb23_pt == null || isNaN(r.saeb23_pt)) &&
+            (r.saeb23_mat == null || isNaN(r.saeb23_mat))
+        );
+    }
 
+    const W = weightsNow();
+    const scored = computeScores(rows, W);
+    calcBands(scored);
+    updateHelpWeights(W);
 
-  const W = weightsNow();                 // <<< pega pesos uma vez
-  const scored = computeScores(rows, W);  // <<< passa os pesos p/ cálculo
-  calcBands(scored);  // define q33/q66 para a visão atual
-  updateHelpWeights(W);                   // <<< atualiza texto do modal
-
-  renderKPIs(scored);
-  renderScatter(scored);
-  renderTable(scored);
-  renderLegend(scored);
+    renderKPIs(scored);
+    renderScatter(scored);
+    renderTable(scored);
+    renderLegend(scored);
 }
-function renderKPIs(rows){
-  const n = rows.length;
-  document.getElementById('k_escolas').textContent = n;
 
-  const has3 = rows.filter(r=> r.possui_3o_ano===true).length;
-  document.getElementById('k_3ano').textContent = n? ((has3/n)*100).toFixed(1)+'%':'–';
+function renderKPIs(rows) {
+    const n = rows.length;
+    $('#k_escolas').textContent = n;
 
-  const mean = (a)=> a.length? (a.reduce((x,y)=>x+y,0)/a.length):null;
-  const partVals = rows.map(r=> r.saeb23_participacao).filter(v=>v!=null && !isNaN(v)).map(Number);
-  document.getElementById('k_part').textContent = partVals.length? (mean(partVals).toFixed(1)+'%'):'–';
+    const has3 = rows.filter(r => r.possui_3o_ano === true).length;
+    $('#k_3ano').textContent = n ? ((has3 / n) * 100).toFixed(1) + '%' : '—';
 
-  // novo KPI: quantidade de escolas com Score >= q66 (prioridade ALTA)
-  const alta = rows.filter(r => r._score!=null && r._score >= SCORE_BANDS.q66).length;
-  const boxAlta = document.getElementById('k_alta');
-  if (boxAlta) boxAlta.textContent = alta;
-  
-  const semSaeb = rows.filter(r => 
-   (r.saeb23_pt == null || isNaN(r.saeb23_pt)) &&
-   (r.saeb23_mat == null || isNaN(r.saeb23_mat))
-  ).length;
-  const kSemSaeb = document.getElementById('k_sem_saeb');
-  if (kSemSaeb) kSemSaeb.textContent = semSaeb;
+    const mean = (a) => a.length ? (a.reduce((x, y) => x + y, 0) / a.length) : null;
+    const partVals = rows.map(r => r.saeb23_participacao).filter(v => v != null && !isNaN(v)).map(Number);
+    $('#k_part').textContent = partVals.length ? (mean(partVals).toFixed(1) + '%') : '—';
+
+    const alta = rows.filter(r => r._score != null && r._score >= SCORE_BANDS.q66).length;
+    $('#k_alta').textContent = alta;
+
+    const semSaeb = rows.filter(r =>
+        (r.saeb23_pt == null || isNaN(r.saeb23_pt)) &&
+        (r.saeb23_mat == null || isNaN(r.saeb23_mat))
+    ).length;
+    $('#k_sem_saeb').textContent = semSaeb;
+}
+
+function renderLegend(rows) {
+    const legend = $('#legend');
+    const dres = Array.from(new Set(rows.map(r => r.dre))).filter(Boolean).slice(0, 12);
+    legend.innerHTML = dres.map((d, i) => 
+        `<div class="legend-item"><span class="legend-dot" style="background:${palette[i % palette.length]}"></span>${d}</div>`
+    ).join('');
+}
+
+function renderScatter(rows) {
+    const svg = $('#scatter');
+    const tip = $('#tip');
+    const bbox = svg.getBoundingClientRect();
+    const W = bbox.width, H = bbox.height;
     
-}
-function renderLegend(rows){
-  const legend = document.getElementById('legend');
-  const dres = Array.from(new Set(rows.map(r=>r.dre))).filter(Boolean).slice(0,12);
-  legend.innerHTML = dres.map((d,i)=>`<span><span class="dot" style="background:${palette[i%palette.length]}"></span>${d}</span>`).join('');
-}
-function renderScatter(rows){
-  const svg = document.getElementById('scatter');
-  const tip = document.getElementById('tip');
-  const bbox = svg.getBoundingClientRect();
-  const W = bbox.width, H = bbox.height;
-  while (svg.firstChild) svg.removeChild(svg.firstChild);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  const pad = 50, plotW = W - pad*2, plotH = H - pad*2;
-  const xSel = document.getElementById('x_axis').value;
-  const ySel = document.getElementById('y_axis').value;
+    const pad = 60, plotW = W - pad * 2, plotH = H - pad * 2;
+    const xSel = $('#x_axis').value;
+    const ySel = $('#y_axis').value;
 
-  const getV = r => v => (r['_'+v] ?? r['_score']);
-  const xAll = rows.map(r=> getV(r)(xSel)).filter(v=>v!=null);
-  const yAll = rows.map(r=> getV(r)(ySel)).filter(v=>v!=null);
+    const getV = r => v => (r['_' + v] ?? r['_score']);
+    const xAll = rows.map(r => getV(r)(xSel)).filter(v => v != null);
+    const yAll = rows.map(r => getV(r)(ySel)).filter(v => v != null);
 
-  // Sem dados para estes eixos? Mostra aviso.
-  if (!xAll.length || !yAll.length) {
-    const text = document.createElementNS("http://www.w3.org/2000/svg","text");
-    text.setAttribute('x', 20);
-    text.setAttribute('y', 30);
-    text.setAttribute('fill', '#64748b');
-    text.setAttribute('font-size', '13');
-    text.textContent = 'Sem pontos para exibir — faltam métricas numéricas para os eixos escolhidos neste recorte.';
-    svg.appendChild(text);
-    return;
-  }
-
-  const xMin=Math.min(...xAll), xMax=Math.max(...xAll);
-  const yMin=Math.min(...yAll), yMax=Math.max(...yAll);
-  const sx = v => pad + ((v - xMin)/((xMax-xMin)||1))*plotW;
-  const sy = v => pad + plotH - ((v - yMin)/((yMax-yMin)||1))*plotH;
-
-  // Eixos
-  const mkLine=(x1,y1,x2,y2,stroke='#94a3b8',dash=null)=>{
-    const l=document.createElementNS("http://www.w3.org/2000/svg","line");
-    l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2);
-    l.setAttribute('stroke',stroke); if(dash) l.setAttribute('stroke-dasharray',dash); svg.appendChild(l);
-  };
-  mkLine(pad,H-pad,W-pad,H-pad); mkLine(pad,pad,pad,H-pad);
-
-  const xMed = median(rows.map(r=> getV(r)(xSel)));
-  const yMed = median(rows.map(r=> getV(r)(ySel)));
-  if (xMed!==null) mkLine(sx(xMed),pad,sx(xMed),H-pad,'#cbd5e1','4 4');
-  if (yMed!==null) mkLine(pad,sy(yMed),W-pad,sy(yMed),'#cbd5e1','4 4');
-
-  // Rótulos
-  const labels = { part:'Participação (prioridade)', perf:'Desempenho (prioridade)', size:'Tamanho (normalizado)', score:'Score de prioridade' };
-  const t=(text,x,y)=>{const n=document.createElementNS("http://www.w3.org/2000/svg","text");n.textContent=text;n.setAttribute('x',x);n.setAttribute('y',y);n.setAttribute('fill','#334155');n.setAttribute('font-size','12');svg.appendChild(n);};
-  t(labels[xSel]||'Score', pad + plotW/2 - 60, H - 12);
-  t(labels[ySel]||'Score', 10, pad - 10);
-
-  // guia: linha de 80% de participação (convertida para "prioridade")
-  const pVals = rows.map(r => r.saeb23_participacao).filter(v => v!=null).map(Number);
-  if (pVals.length && (xSel==='part' || ySel==='part')) {
-    const pMin = Math.min(...pVals), pMax = Math.max(...pVals), span = (pMax-pMin)||1;
-    const prio80 = 1 - ((80 - pMin)/span); // prioridade correspondente a 80%
-    if (xSel==='part' && prio80>=xMin && prio80<=xMax){
-      const lx = sx(prio80);
-      mkLine(lx, pad, lx, H-pad, '#ef4444', '6 4');
-    }
-    if (ySel==='part' && prio80>=yMin && prio80<=yMax){
-      const ly = sy(prio80);
-      mkLine(pad, ly, W-pad, ly, '#ef4444', '6 4');
-    }
-  }
-
-  // -------- PONTOS: preenchimento por DRE, borda pela PRIORIDADE --------
-  const dreList = Array.from(new Set(rows.map(r=> String(r.dre))));
-  const sVals = rows.map(r => r._size ?? 0);
-  const sMin = Math.min(...sVals), sMax = Math.max(...sVals);
-  const radiusOf = v => 4 + 12 * ((v - sMin)/((sMax - sMin)||1));
-
-  rows.forEach((r)=>{
-    const xv = getV(r)(xSel), yv = getV(r)(ySel);
-    if (xv==null || yv==null) return;
-
-    const cx = sx(xv), cy = sy(yv);
-    const fillColor = palette[(dreList.indexOf(String(r.dre))+palette.length)%palette.length] || '#1f77b4';
-    const radius = radiusOf(r._size ?? 0);
-
-    const g = document.createElementNS("http://www.w3.org/2000/svg","g");
-
-    // ponto preenchido (cor da DRE)
-    const dot = document.createElementNS("http://www.w3.org/2000/svg","circle");
-    dot.setAttribute('cx',cx); dot.setAttribute('cy',cy);
-    dot.setAttribute('r',radius);
-    dot.setAttribute('fill',fillColor);
-    dot.setAttribute('fill-opacity','0.85');
-    dot.setAttribute('stroke','none');
-    g.appendChild(dot);
-
-    // anel de PRIORIDADE (borda colorida por faixa Alta/Média/Baixa)
-    const cls = (typeof classifyScore === 'function') ? classifyScore(r._score) : {color:'#334155'};
-    const ring = document.createElementNS("http://www.w3.org/2000/svg","circle");
-    ring.setAttribute('cx',cx); ring.setAttribute('cy',cy);
-    ring.setAttribute('r',radius+0.5); // ligeiramente maior que o ponto
-    ring.setAttribute('fill','none');
-    ring.setAttribute('stroke', cls.color);
-    ring.setAttribute('stroke-width','2');
-    g.appendChild(ring);
-
-    // (opcional) se você usa penalidade SAEB, desenha um halo tracejado quando em risco
-    if ((r._saeb ?? 0) > 0){
-      const halo = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      halo.setAttribute('cx',cx); halo.setAttribute('cy',cy);
-      halo.setAttribute('r',radius+3);
-      halo.setAttribute('fill','none');
-      halo.setAttribute('stroke','#ef4444');
-      halo.setAttribute('stroke-width','2');
-      halo.setAttribute('stroke-dasharray','4 2');
-      g.appendChild(halo);
+    if (!xAll.length || !yAll.length) {
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute('x', 20);
+        text.setAttribute('y', 30);
+        text.setAttribute('fill', '#64748b');
+        text.setAttribute('font-size', '14');
+        text.textContent = 'Sem dados suficientes para exibir o gráfico com os eixos selecionados.';
+        svg.appendChild(text);
+        return;
     }
 
-    // tooltip
-    g.addEventListener('mousemove', (ev)=>{
-      tip.style.opacity = 1;
-      tip.style.left = (ev.offsetX + 12) + 'px';
-      tip.style.top  = (ev.offsetY + 12) + 'px';
-      tip.innerHTML = (typeof buildTooltipHTML === 'function')
-        ? buildTooltipHTML(r)
-        : `<strong>${r.escola}</strong><br>DRE: ${r.dre ?? '—'} • Alunos: ${r.num_alunos ?? '—'}<br>Score: ${r._score?.toFixed(3) ?? '—'}`;
+    const xMin = Math.min(...xAll), xMax = Math.max(...xAll);
+    const yMin = Math.min(...yAll), yMax = Math.max(...yAll);
+    const sx = v => pad + ((v - xMin) / ((xMax - xMin) || 1)) * plotW;
+    const sy = v => pad + plotH - ((v - yMin) / ((yMax - yMin) || 1)) * plotH;
+
+    // Eixos
+    const mkLine = (x1, y1, x2, y2, stroke = '#cbd5e1', dash = null) => {
+        const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+        l.setAttribute('stroke', stroke);
+        l.setAttribute('stroke-width', '1.5');
+        if (dash) l.setAttribute('stroke-dasharray', dash);
+        svg.appendChild(l);
+    };
+    
+    mkLine(pad, H - pad, W - pad, H - pad);
+    mkLine(pad, pad, pad, H - pad);
+
+    const xMed = median(rows.map(r => getV(r)(xSel)));
+    const yMed = median(rows.map(r => getV(r)(ySel)));
+    if (xMed !== null) mkLine(sx(xMed), pad, sx(xMed), H - pad, '#94a3b8', '4 4');
+    if (yMed !== null) mkLine(pad, sy(yMed), W - pad, sy(yMed), '#94a3b8', '4 4');
+
+    // Labels
+    const labels = {
+        part: 'Participação (prioridade)',
+        perf: 'Desempenho (prioridade)',
+        size: 'Tamanho (normalizado)',
+        score: 'Score de prioridade'
+    };
+    
+    const t = (text, x, y, anchor = 'middle') => {
+        const n = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        n.textContent = text;
+        n.setAttribute('x', x);
+        n.setAttribute('y', y);
+        n.setAttribute('fill', '#334155');
+        n.setAttribute('font-size', '13');
+        n.setAttribute('text-anchor', anchor);
+        n.setAttribute('font-weight', '600');
+        svg.appendChild(n);
+    };
+    
+    t(labels[xSel] || 'Score', W / 2, H - 15);
+    
+    const yLabelText = labels[ySel] || 'Score';
+    const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    yLabel.textContent = yLabelText;
+    yLabel.setAttribute('x', 15);
+    yLabel.setAttribute('y', H / 2);
+    yLabel.setAttribute('fill', '#334155');
+    yLabel.setAttribute('font-size', '13');
+    yLabel.setAttribute('text-anchor', 'middle');
+    yLabel.setAttribute('font-weight', '600');
+    yLabel.setAttribute('transform', `rotate(-90, 15, ${H/2})`);
+    svg.appendChild(yLabel);
+
+    // Linha de 80% de participação
+    const pVals = rows.map(r => r.saeb23_participacao).filter(v => v != null).map(Number);
+    if (pVals.length && (xSel === 'part' || ySel === 'part')) {
+        const pMin = Math.min(...pVals), pMax = Math.max(...pVals), span = (pMax - pMin) || 1;
+        const prio80 = 1 - ((80 - pMin) / span);
+        
+        if (xSel === 'part' && prio80 >= xMin && prio80 <= xMax) {
+            const lx = sx(prio80);
+            mkLine(lx, pad, lx, H - pad, '#ef4444', '6 4');
+        }
+        if (ySel === 'part' && prio80 >= yMin && prio80 <= yMax) {
+            const ly = sy(prio80);
+            mkLine(pad, ly, W - pad, ly, '#ef4444', '6 4');
+        }
+    }
+
+    // Pontos
+    const dreList = Array.from(new Set(rows.map(r => String(r.dre))));
+    const sVals = rows.map(r => r._size ?? 0);
+    const sMin = Math.min(...sVals), sMax = Math.max(...sVals);
+    const radiusOf = v => 5 + 14 * ((v - sMin) / ((sMax - sMin) || 1));
+
+    rows.forEach((r) => {
+        const xv = getV(r)(xSel), yv = getV(r)(ySel);
+        if (xv == null || yv == null) return;
+
+        const cx = sx(xv), cy = sy(yv);
+        const fillColor = palette[(dreList.indexOf(String(r.dre)) + palette.length) % palette.length] || '#1f77b4';
+        const radius = radiusOf(r._size ?? 0);
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+        // Ponto principal
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+        dot.setAttribute('r', radius);
+        dot.setAttribute('fill', fillColor);
+        dot.setAttribute('fill-opacity', '0.85');
+        dot.setAttribute('stroke', 'none');
+        g.appendChild(dot);
+
+        // Borda de prioridade
+        const cls = classifyScore(r._score);
+        const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        ring.setAttribute('cx', cx); ring.setAttribute('cy', cy);
+        ring.setAttribute('r', radius + 1);
+        ring.setAttribute('fill', 'none');
+        ring.setAttribute('stroke', cls.color);
+        ring.setAttribute('stroke-width', '2.5');
+        g.appendChild(ring);
+
+        // Tooltip
+        g.addEventListener('mousemove', (ev) => {
+            tip.style.opacity = 1;
+            tip.style.left = (ev.offsetX + 12) + 'px';
+            tip.style.top = (ev.offsetY + 12) + 'px';
+            tip.innerHTML = `
+                <strong>${r.escola}</strong><br>
+                DRE: ${r.dre ?? '—'} • Alunos: ${r.num_alunos ?? '—'}<br>
+                Score: ${r._score?.toFixed(3) ?? '—'} (${cls.label})
+            `;
+        });
+        
+        g.addEventListener('mouseleave', () => tip.style.opacity = 0);
+
+        svg.appendChild(g);
     });
-    g.addEventListener('mouseleave', ()=> tip.style.opacity = 0);
-
-    svg.appendChild(g);
-  });
-}
-function renderTable(rows){
-  const tbody = document.querySelector('#tbl tbody');
-  tbody.innerHTML='';
-  rows.sort((a,b)=> (b._score??-1) - (a._score??-1));
-  const topN = Number(document.getElementById('topN').value||0);
-  const show = topN? rows.slice(0, topN) : rows;
-  show.forEach((r, idx)=>{
-    const tr=document.createElement('tr');
-    const td=v=>{const t=document.createElement('td'); t.textContent=(v??''); return t;};
-    tr.appendChild(td(idx+1));
-    tr.appendChild(td(r.escola)); tr.appendChild(td(r.dre)); tr.appendChild(td(r.tipo_ensino)); tr.appendChild(td(r.num_alunos));
-    tr.appendChild(td(r.saeb23_participacao)); tr.appendChild(td(r.plurall_participacao));
-    tr.appendChild(td(r.saeb23_pt)); tr.appendChild(td(r.saeb23_mat)); tr.appendChild(td(r.saese24_pt)); tr.appendChild(td(r.saese24_mat));
-    tr.appendChild(td(r.plurall_rend_pt)); tr.appendChild(td(r.plurall_rend_mat));
-    const cl = classifyScore(r._score);
-    tr.appendChild(td(cl.label));
-    tr.appendChild(td(r._score==null?'':r._score.toFixed(3)));
-    tbody.appendChild(tr);
-  });
-}
-function renderSelects(rows){
-  const uniq = (arr,k)=> Array.from(new Set(arr.map(r=> r[k]))).filter(Boolean).sort();
-  fillSelect('f_dre',  uniq(rows,'dre'));
-  fillSelect('f_tipo', uniq(rows,'tipo_ensino'));
-  fillSelect('f_cat',  uniq(rows,'categoria'));
-  fillSelect('f_urb',  uniq(rows,'area_urbana'));
-}
-function exportCSV(){
-  const table = document.getElementById('tbl');
-  let csv=''; const rows = table.querySelectorAll('tr');
-  rows.forEach(row=>{
-    const cols = row.querySelectorAll('th,td');
-    const vals = Array.from(cols).map(c=> '"'+ (c.textContent||'').replaceAll('"','""') +'"');
-    csv += vals.join(',') + '\n';
-  });
-  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='ranking_escolas.csv'; a.click();
-  URL.revokeObjectURL(url);
 }
 
-/* ================== LOADER (JSON/CSV do ambiente) ================== */
-async function tryFetch(url, type){
-  const status = document.getElementById('dataStatus');
-  try{
-    const res = await fetch(url, {cache:'no-store'});
-    if (!res.ok) throw new Error(res.status+' '+res.statusText);
-    if (type==='json'){
-      return await res.json();
-    } else {
-      const txt = await res.text();
-      // CSV simples com suporte a ; e , e aspas
-      const guessSep = (txt.indexOf(';')>txt.indexOf(',')) ? ';' : ',';
-      const lines = txt.split(/\r?\n/).filter(l=>l.trim().length);
-      const head = splitCSVLine(lines[0], guessSep).map(h=>h.replace(/^"+|"+$/g,'').trim());
-      const rows = lines.slice(1).map(line => {
-        const cells = splitCSVLine(line, guessSep);
-        const obj = {};
-        head.forEach((h,i)=> obj[h] = (cells[i] ?? '').replace(/^"+|"+$/g,'').trim());
-        return obj;
-      });
-      return rows;
+function renderTable(rows) {
+    const tbody = document.querySelector('#tbl tbody');
+    tbody.innerHTML = '';
+    rows.sort((a, b) => (b._score ?? -1) - (a._score ?? -1));
+    
+    const topN = Number($('#topN').value || 0);
+    const show = topN ? rows.slice(0, topN) : rows;
+    
+    show.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        const td = v => {
+            const t = document.createElement('td');
+            t.textContent = (v ?? '');
+            return t;
+        };
+        
+        tr.appendChild(td(idx + 1));
+        tr.appendChild(td(r.escola));
+        tr.appendChild(td(r.dre));
+        tr.appendChild(td(r.tipo_ensino));
+        tr.appendChild(td(r.num_alunos));
+        tr.appendChild(td(r.saeb23_participacao));
+        tr.appendChild(td(r.plurall_participacao));
+        tr.appendChild(td(r.saeb23_pt));
+        tr.appendChild(td(r.saeb23_mat));
+        tr.appendChild(td(r.saese24_pt));
+        tr.appendChild(td(r.saese24_mat));
+        tr.appendChild(td(r.plurall_rend_pt));
+        tr.appendChild(td(r.plurall_rend_mat));
+        
+        const cl = classifyScore(r._score);
+        const badge = document.createElement('td');
+        badge.innerHTML = `<span class="priority-badge priority-${cl.label.toLowerCase()}">${cl.label}</span>`;
+        tr.appendChild(badge);
+        
+        tr.appendChild(td(r._score == null ? '' : r._score.toFixed(3)));
+        tbody.appendChild(tr);
+    });
+}
+
+function renderSelects(rows) {
+    const uniq = (arr, k) => Array.from(new Set(arr.map(r => r[k]))).filter(Boolean).sort();
+    fillSelect('f_dre', uniq(rows, 'dre'));
+    fillSelect('f_tipo', uniq(rows, 'tipo_ensino'));
+    fillSelect('f_cat', uniq(rows, 'categoria'));
+    fillSelect('f_urb', uniq(rows, 'area_urbana'));
+}
+
+function exportCSV() {
+    const table = $('#tbl');
+    let csv = '';
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        const cols = row.querySelectorAll('th,td');
+        const vals = Array.from(cols).map(c => '"' + (c.textContent || '').replaceAll('"', '""') + '"');
+        csv += vals.join(',') + '\n';
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ranking_escolas_saeb2025.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+/* ================== LOADER ================== */
+async function tryFetch(url, type) {
+    const status = $('#dataStatus');
+    try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        
+        if (type === 'json') {
+            return await res.json();
+        } else {
+            const txt = await res.text();
+            const guessSep = (txt.indexOf(';') > txt.indexOf(',')) ? ';' : ',';
+            const lines = txt.split(/\r?\n/).filter(l => l.trim().length);
+            const head = splitCSVLine(lines[0], guessSep).map(h => h.replace(/^"+|"+$/g, '').trim());
+            const rows = lines.slice(1).map(line => {
+                const cells = splitCSVLine(line, guessSep);
+                const obj = {};
+                head.forEach((h, i) => obj[h] = (cells[i] ?? '').replace(/^"+|"+$/g, '').trim());
+                return obj;
+            });
+            return rows;
+        }
+    } catch (err) {
+        status.textContent = `Não foi possível carregar de ${url.split('/').pop()} (${err.message})`;
+        return null;
     }
-  } catch(err){
-    status.textContent = `Status: não carregado de ${url} (${err.message}).`;
-    return null;
-  }
 }
-function splitCSVLine(line, sep){
-  const out=[]; let cur=''; let q=false;
-  for (let i=0;i<line.length;i++){
-    const ch=line[i];
-    if (ch === '"'){ q=!q; cur+=ch; }
-    else if (ch === sep && !q){ out.push(cur); cur=''; }
-    else { cur+=ch; }
-  }
-  out.push(cur);
-  return out;
+
+function splitCSVLine(line, sep) {
+    const out = []; let cur = ''; let q = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { q = !q; cur += ch; }
+        else if (ch === sep && !q) { out.push(cur); cur = ''; }
+        else { cur += ch; }
+    }
+    out.push(cur);
+    return out;
 }
-function ingest(rawRows){
-  // 1) renomeia colunas; 2) coerção de tipos; 3) guarda na memória
-  const rows = rawRows.map(renameCols).map(coerceTypes);
-  window._rowsRaw = rows;
-  renderSelects(rows);
-  document.getElementById('dataStatus').textContent = `Status: ${rows.length} linhas carregadas.`;
-  apply();
+
+function ingest(rawRows) {
+    const rows = rawRows.map(renameCols).map(coerceTypes);
+    window._rowsRaw = rows;
+    renderSelects(rows);
+    $('#dataStatus').textContent = `✓ ${rows.length} escolas carregadas com sucesso`;
+    apply();
 }
 
 /* ================== EVENTOS ================== */
-document.getElementById('applyBtn').addEventListener('click', apply);
-document.getElementById('clearBtn').addEventListener('click', ()=>{ 
-  ['f_dre','f_tipo','f_cat','f_urb'].forEach(id=>{
-    const el=document.getElementById(id); Array.from(el.options).forEach(o=>o.selected=false);
-  });
-  document.getElementById('f_3ano').checked=false; apply();
-});
-document.getElementById('recalcBtn').addEventListener('click', apply);
-document.getElementById('updatePlotBtn').addEventListener('click', apply);
-document.getElementById('topN').addEventListener('change', apply);
-document.getElementById('exportBtn').addEventListener('click', exportCSV);
-
-// Upload manual (quando fetch estiver bloqueado)
-document.getElementById('pickBtn').addEventListener('click', ()=> document.getElementById('fileInput').click());
-document.getElementById('fileInput').addEventListener('change', async (e)=>{
-  const f = e.target.files[0]; if (!f) return;
-  const txt = await f.text();
-  const isJSON = /\.json$/i.test(f.name) || txt.trim().startsWith('[') || txt.trim().startsWith('{');
-  const raw = isJSON ? JSON.parse(txt) : (function(){
-    const guessSep = (txt.indexOf(';')>txt.indexOf(',')) ? ';' : ',';
-    const lines = txt.split(/\r?\n/).filter(l=>l.trim().length);
-    const head = splitCSVLine(lines[0], guessSep).map(h=>h.replace(/^"+|"+$/g,'').trim());
-    return lines.slice(1).map(line=>{
-      const cells = splitCSVLine(line, guessSep);
-      const obj={}; head.forEach((h,i)=> obj[h]=(cells[i]??'').replace(/^"+|"+$/g,'').trim());
-      return obj;
+$('#applyBtn').addEventListener('click', apply);
+$('#clearBtn').addEventListener('click', () => {
+    ['f_dre', 'f_tipo', 'f_cat', 'f_urb'].forEach(id => {
+        const el = document.getElementById(id);
+        Array.from(el.options).forEach(o => o.selected = false);
     });
-  })();
-  ingest(raw);
+    $('#f_3ano').checked = false;
+    $('#f_sem_saeb').checked = false;
+    apply();
+});
+$('#recalcBtn').addEventListener('click', apply);
+$('#updatePlotBtn').addEventListener('click', apply);
+$('#topN').addEventListener('change', apply);
+$('#exportBtn').addEventListener('click', exportCSV);
+
+// Sliders de peso
+['w_part', 'w_perf', 'w_size'].forEach(id => {
+    document.getElementById(id).addEventListener('input', weightsNow);
 });
 
-/* ================== STARTUP: tenta dados.json -> dados.csv ================== */
-(async function bootstrap(){
-  for (const src of DATA_SOURCES){
-    const raw = await tryFetch(src.url, src.type);
-    if (raw && raw.length){ ingest(raw); return; }
-  }
-  document.getElementById('dataStatus').textContent =
-    'Status: não encontrei dados.json nem dados.csv. Use “Carregar arquivo” ou hospede um desses arquivos na mesma pasta.';
-})();
+// Modal de ajuda
+$('#helpBtn').addEventListener('click', () => {
+    updateHelpWeights();
+    $('#helpOverlay').classList.add('active');
+});
 
-// — Ajuda: abrir/fechar e mostrar pesos atuais —
-function openHelp(){ document.getElementById('helpOverlay').classList.remove('hidden'); }
-function closeHelp(){ document.getElementById('helpOverlay').classList.add('hidden'); }
+$('#helpClose').addEventListener('click', () => {
+    $('#helpOverlay').classList.remove('active');
+});
 
-function updateHelpWeights(W){
-  // usa os pesos atuais (se não vierem como arg, lê dos sliders)
-  const w = W || weightsNow();
-  const pw = (id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=(val??0).toFixed(2); };
-  pw('help_w_part', w.part); pw('help_w_perf', w.perf); pw('help_w_size', w.size);
+$('#helpOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'helpOverlay') {
+        $('#helpOverlay').classList.remove('active');
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        $('#helpOverlay').classList.remove('active');
+    }
+});
+
+function updateHelpWeights(W) {
+    const w = W || weightsNow();
+    const pw = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = (val ?? 0).toFixed(2);
+    };
+    pw('help_w_part', w.part);
+    pw('help_w_perf', w.perf);
+    pw('help_w_size', w.size);
 }
 
-// listeners do modal
-document.getElementById('helpBtn')  .addEventListener('click', ()=>{ updateHelpWeights(); openHelp(); });
-document.getElementById('helpClose').addEventListener('click', closeHelp);
-document.getElementById('helpOverlay').addEventListener('click', (e)=>{ if(e.target.id==='helpOverlay') closeHelp(); });
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelp(); });
-
-
-
-</script>
-
-<div class="tooltip" id="tip"></div>
-<!-- Modal de Ajuda -->
-<div id="helpOverlay" class="modal-backdrop hidden" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-    <div class="modal-head">
-      <h3 id="helpTitle" style="margin:0">Como o painel funciona</h3>
-      <button class="btn" id="helpClose">✕</button>
-    </div>
-    <div class="modal-body">
-      <h4>O que o painel faz</h4>
-      <ul>
-        <li>Carrega os dados (aba <b>Geral</b>) e aplica os filtros (DRE, Tipo, Categoria, Área, 3º ano).</li>
-        <li>Calcula um <b>Score de Prioridade</b> por escola com base em <b>Participação</b>, <b>Desempenho</b> e <b>Tamanho</b> (alunos).</li>
-        <li>Mostra o mapa (dispersão), KPIs e o ranking ordenado pelo Score.</li>
-      </ul>
-
-      <h4>Fórmula do Score</h4>
-      <div class="code">
-        Para cada indicador \(x\) no conjunto filtrado S:<br>
-        min = min<sub>S</sub>(x), max = max<sub>S</sub>(x), Δ = max − min (se Δ=0, usa 1).<br>
-        <b>minmax</b><sub>i</sub> = (x<sub>i</sub> − min) / Δ ∈ [0,1].<br><br>
-        Indicadores onde “<i>menor é pior</i>” (Participação, Desempenho): <b>prioridade</b><sub>i</sub> = 1 − minmax<sub>i</sub>.<br>
-        Tamanho (nº de alunos): <b>tamanho_norm</b><sub>i</sub> = minmax<sub>i</sub> (não inverte).<br><br>
-        <b>Part</b><sub>i</sub> = média das prioridades de participação disponíveis.<br>
-        <b>Perf</b><sub>i</sub> = média das prioridades de desempenho disponíveis.<br>
-        <b>Size</b><sub>i</sub> = tamanho_norm.<br><br>
-        Pesos escolhidos → w<sub>part</sub>, w<sub>perf</sub>, w<sub>size</sub> (normalizados para somar 1).<br>
-        Se faltar um bloco para a escola, repondera só entre os válidos.<br><br>
-        <b>Score</b><sub>i</sub> = w′<sub>part</sub>·Part<sub>i</sub> + w′<sub>perf</sub>·Perf<sub>i</sub> + w′<sub>size</sub>·Size<sub>i</sub>.
-      </div>
-      <div class="note" style="margin-top:8px">
-        Pesos atuais: Part=<b id="help_w_part">–</b> • Perf=<b id="help_w_perf">–</b> • Size=<b id="help_w_size">–</b>
-      </div>
-
-      <h4>Quais colunas entram</h4>
-      <div class="note">
-        <b>Participação:</b> SAEB 23 Taxa de Participação; Participação Avaliação Plurall.<br>
-        <b>Desempenho:</b> SAEB23 PT/MAT; SAESE24 PT/MAT; Rendimento Plurall PT/MAT.<br>
-        <b>Tamanho:</b> Número de Alunos.
-      </div>
-
-      <h4>Dicas</h4>
-      <ul>
-        <li>Pontos maiores no mapa = mais alunos; cores = DRE; linhas tracejadas = medianas.</li>
-        <li>Quer que o gráfico reaja aos pesos? selecione <b>Score</b> como eixo X ou Y.</li>
-        <li>Clique em <b>Exportar CSV</b> para baixar o ranking atual.</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-
-
+/* ================== STARTUP ================== */
+(async function bootstrap() {
+    for (const src of DATA_SOURCES) {
+        const raw = await tryFetch(src.url, src.type);
+        if (raw && raw.length) {
+            ingest(raw);
+            return;
+        }
+    }
+    $('#dataStatus').textContent = '⚠️ Nenhum arquivo de dados encontrado. Verifique se csv.priorizacao.csv está no mesmo diretório.';
+})();
+    </script>
 </body>
 </html>
+
